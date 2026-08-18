@@ -6,6 +6,7 @@ from forensic_model.detector import ImageDetector
 from forensic_model.features import FEATURE_NAMES, FEATURE_VERSION, FeatureVector, extract_features
 from forensic_model.image import ImageDecodeError, ImageDecoder, PPMDecoder, RGBImage
 from forensic_model.manifest import ManifestError, Sample, load_manifest, manifest_digest, validate_manifest
+from forensic_model.metrics import BinaryMetrics, ConfidenceInterval, auroc, binary_metrics, grouped_bootstrap_interval
 from forensic_model.model import LogisticModel, Prediction
 from forensic_model.provenance import (
     ForensicResult,
@@ -15,12 +16,23 @@ from forensic_model.provenance import (
     check_provenance,
     fuse_evidence,
 )
+from forensic_model.robustness import (
+    EvaluationSample,
+    Transformation,
+    default_transformations,
+    evaluate_postprocessing,
+    evaluate_samples,
+    evaluate_unseen_generators,
+)
 
 __all__ = [
     "FEATURE_NAMES",
     "FEATURE_VERSION",
     "FeatureVector",
     "ForensicResult",
+    "BinaryMetrics",
+    "ConfidenceInterval",
+    "EvaluationSample",
     "ImageDecodeError",
     "ImageDecoder",
     "ImageDetector",
@@ -35,11 +47,19 @@ __all__ = [
     "RGBImage",
     "Reason",
     "Sample",
+    "Transformation",
     "DecisionPolicy",
     "DetectionResult",
     "extract_features",
+    "auroc",
+    "binary_metrics",
     "check_provenance",
     "fuse_evidence",
+    "default_transformations",
+    "evaluate_postprocessing",
+    "evaluate_samples",
+    "evaluate_unseen_generators",
+    "grouped_bootstrap_interval",
     "load_manifest",
     "manifest_digest",
     "validate_manifest",

@@ -9,7 +9,7 @@ from typing import Sequence
 
 from forensic_model.calibration import PlattCalibrator
 from forensic_model.decision import DecisionPolicy, DetectionResult, decide
-from forensic_model.features import extract_features
+from forensic_model.features import FEATURE_VERSION, extract_features
 from forensic_model.image import ImageDecoder, PPMDecoder, RGBImage
 from forensic_model.model import LogisticModel, Prediction
 
@@ -38,7 +38,10 @@ class ImageDetector:
         return self.predict_image((decoder or PPMDecoder()).decode(path))
 
     def save(self, path: Path) -> None:
-        artifact = {
+        path.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    def to_dict(self) -> dict[str, object]:
+        return {
             "artifact_version": 1,
             "model": self.model.to_dict(),
             "calibration": self.calibrator.to_dict() if self.calibrator else None,
@@ -48,11 +51,16 @@ class ImageDetector:
                 "reason_count": self.policy.reason_count,
             },
         }
-        path.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     @classmethod
     def load(cls, path: Path) -> "ImageDetector":
         values = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(values, dict):
+            raise ValueError("detector artifact must be a JSON object")
+        return cls.from_dict(values)
+
+    @classmethod
+    def from_dict(cls, values: dict[str, object]) -> "ImageDetector":
         if not isinstance(values, dict) or values.get("artifact_version") != 1:
             raise ValueError("unsupported detector artifact")
         model_values = values.get("model")
@@ -70,4 +78,7 @@ class ImageDetector:
             abstain_margin=float(policy_values["abstain_margin"]),
             reason_count=int(policy_values["reason_count"]),
         )
-        return cls(LogisticModel.from_dict(model_values), calibrator, policy)
+        model = LogisticModel.from_dict(model_values)
+        if model.feature_version != FEATURE_VERSION:
+            raise ValueError("detector artifact does not use image features")
+        return cls(model, calibrator, policy)

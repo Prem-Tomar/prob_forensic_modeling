@@ -24,12 +24,27 @@ from forensic_model.robustness import (
     evaluate_samples,
     evaluate_unseen_generators,
 )
+from forensic_model.video import (
+    TEMPORAL_FEATURE_NAMES,
+    TEMPORAL_FEATURE_VERSION,
+    FrameScore,
+    TimedFrame,
+    VideoClip,
+    VideoDecoder,
+    VideoDetector,
+    VideoResult,
+    extract_temporal_features,
+    sample_frames,
+)
 
 __all__ = [
     "FEATURE_NAMES",
     "FEATURE_VERSION",
+    "TEMPORAL_FEATURE_NAMES",
+    "TEMPORAL_FEATURE_VERSION",
     "FeatureVector",
     "ForensicResult",
+    "FrameScore",
     "BinaryMetrics",
     "ConfidenceInterval",
     "EvaluationSample",
@@ -48,9 +63,15 @@ __all__ = [
     "Reason",
     "Sample",
     "Transformation",
+    "TimedFrame",
+    "VideoClip",
+    "VideoDecoder",
+    "VideoDetector",
+    "VideoResult",
     "DecisionPolicy",
     "DetectionResult",
     "extract_features",
+    "extract_temporal_features",
     "auroc",
     "binary_metrics",
     "check_provenance",
@@ -62,6 +83,7 @@ __all__ = [
     "grouped_bootstrap_interval",
     "load_manifest",
     "manifest_digest",
+    "sample_frames",
     "validate_manifest",
 ]
 

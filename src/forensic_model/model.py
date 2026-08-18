@@ -44,7 +44,8 @@ class LogisticModel:
         if learning_rate <= 0.0 or epochs <= 0 or l2 < 0.0:
             raise ValueError("learning_rate and epochs must be positive; l2 must be non-negative")
         names = features[0].names
-        if any(vector.names != names or vector.version != FEATURE_VERSION for vector in features):
+        version = features[0].version
+        if not version or any(vector.names != names or vector.version != version for vector in features):
             raise ValueError("all feature vectors must use the same supported schema")
 
         columns = tuple(tuple(vector.values[index] for vector in features) for index in range(len(names)))
@@ -63,7 +64,7 @@ class LogisticModel:
             weights = [weight - learning_rate * gradient for weight, gradient in zip(weights, gradients)]
             bias -= learning_rate * bias_gradient
 
-        return cls(names, means, scales, tuple(weights), bias)
+        return cls(names, means, scales, tuple(weights), bias, version)
 
     def predict(self, features: FeatureVector) -> Prediction:
         if features.names != self.feature_names or features.version != self.feature_version:
@@ -88,14 +89,16 @@ class LogisticModel:
     def from_dict(cls, values: dict[str, object]) -> "LogisticModel":
         if values.get("model_type") != "standardized_logistic_regression":
             raise ValueError("unsupported model type")
-        if values.get("feature_version") != FEATURE_VERSION:
-            raise ValueError("unsupported feature version")
+        feature_version = str(values.get("feature_version") or "")
+        if not feature_version:
+            raise ValueError("feature version must not be empty")
         model = cls(
             feature_names=tuple(str(value) for value in _list(values, "feature_names")),
             means=tuple(float(value) for value in _list(values, "means")),
             scales=tuple(float(value) for value in _list(values, "scales")),
             weights=tuple(float(value) for value in _list(values, "weights")),
             bias=float(values["bias"]),
+            feature_version=feature_version,
         )
         lengths = {len(model.feature_names), len(model.means), len(model.scales), len(model.weights)}
         numeric = model.means + model.scales + model.weights + (model.bias,)

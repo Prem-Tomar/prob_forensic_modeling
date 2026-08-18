@@ -1,0 +1,212 @@
+{
+  "attribution": [
+    {
+      "citation": "Bird, J. J. and Lotfi, A. (2024), CIFAKE, IEEE Access.",
+      "license_id": "MIT",
+      "name": "CIFAKE",
+      "source_url": "https://github.com/jordan-bird/CIFAKE-Real-and-AI-Generated-Synthetic-Images"
+    },
+    {
+      "citation": "Krizhevsky, A. and Hinton, G. (2009), Learning multiple layers of features from tiny images.",
+      "license_id": "MIT",
+      "name": "CIFAR-10",
+      "source_url": "https://www.cs.toronto.edu/~kriz/cifar.html"
+    },
+    {
+      "citation": "Kang, H. et al. (2025), LEGION: Learning to Ground and Explain for Synthetic Image Detection.",
+      "license_id": "Apache-2.0",
+      "name": "SynthScars",
+      "source_url": "https://huggingface.co/datasets/khr0516/SynthScars"
+    }
+  ],
+  "calibration": {
+    "intercept": 0.23722202505930942,
+    "method": "platt",
+    "slope": 1.279060052466258
+  },
+  "cifake_test": {
+    "blur1": {
+      "auprc": 0.7780045142760869,
+      "auroc": 0.7861712868214105,
+      "balanced_accuracy": 0.7001958388408445,
+      "brier": 0.19865644792570356,
+      "count": 17876,
+      "expected_calibration_error": 0.09056547516589501,
+      "f1": 0.673773987206823,
+      "false_positive_rate_at_90_recall": 0.5453430005577244,
+      "log_loss": 0.5813810506539954,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.7369402985074627,
+      "recall": 0.6205813040062844,
+      "recall_at_1_percent_false_positive_rate": 0.13073729098866568,
+      "sensitivity": 0.6205813040062844,
+      "specificity": 0.7798103736754044
+    },
+    "clean": {
+      "auprc": 0.8852849431145994,
+      "auroc": 0.8877796000018275,
+      "balanced_accuracy": 0.8040163485688524,
+      "brier": 0.13601002053819272,
+      "count": 17876,
+      "expected_calibration_error": 0.016253243457465722,
+      "f1": 0.8091062578290943,
+      "false_positive_rate_at_90_recall": 0.33218070273285,
+      "log_loss": 0.42224348526664607,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.7860317460317461,
+      "recall": 0.8335764785097071,
+      "recall_at_1_percent_false_positive_rate": 0.27000336662551905,
+      "sensitivity": 0.8335764785097071,
+      "specificity": 0.7744562186279977
+    },
+    "jpeg30": {
+      "auprc": 0.8641399487962277,
+      "auroc": 0.8653359243227147,
+      "balanced_accuracy": 0.7809444802206214,
+      "brier": 0.14965126734368284,
+      "count": 17876,
+      "expected_calibration_error": 0.013838104269717117,
+      "f1": 0.785004665459136,
+      "false_positive_rate_at_90_recall": 0.3972113775794757,
+      "log_loss": 0.4573745309923882,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.7682638590459819,
+      "recall": 0.8024913028840759,
+      "recall_at_1_percent_false_positive_rate": 0.2272472225339468,
+      "sensitivity": 0.8024913028840759,
+      "specificity": 0.7593976575571667
+    },
+    "resize50": {
+      "auprc": 0.7594967361388915,
+      "auroc": 0.7639002923062124,
+      "balanced_accuracy": 0.6804421902080204,
+      "brier": 0.20369819490083657,
+      "count": 17876,
+      "expected_calibration_error": 0.0698883048178711,
+      "f1": 0.7143213946750586,
+      "false_positive_rate_at_90_recall": 0.5957612939208031,
+      "log_loss": 0.5974066010286492,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.64368023046453,
+      "recall": 0.8023790820334418,
+      "recall_at_1_percent_false_positive_rate": 0.12366737739872068,
+      "sensitivity": 0.8023790820334418,
+      "specificity": 0.558505298382599
+    }
+  },
+  "claim_scope": "research_baseline_not_production_assurance",
+  "clean_auroc_grouped_bootstrap_95_percent": {
+    "confidence": 0.95,
+    "estimate": 0.8877796000018275,
+    "lower": 0.8830979837474751,
+    "successful_resamples": 500,
+    "upper": 0.8921495642674357
+  },
+  "configuration": {
+    "batch_size": 256,
+    "cpu_threads": 8,
+    "epochs": 8,
+    "learning_rate": 0.0008,
+    "seed": 20260818,
+    "weight_decay": 0.0001
+  },
+  "data_audit": {
+    "exact_duplicate_groups": 1336,
+    "exact_duplicates_removed": 1336,
+    "input_samples": 120000,
+    "perceptual_collision_groups": 18,
+    "retained_samples": 118664,
+    "split_counts": {
+      "test": 17876,
+      "train": 83037,
+      "validation": 17751
+    }
+  },
+  "environment": {
+    "device": "cpu",
+    "pillow": "11.3.0",
+    "python": "3.9.6",
+    "torch": "2.7.1",
+    "torchvision": "0.22.1"
+  },
+  "explanation_summary": {
+    "mean_absolute_frequency_contribution": 1.6628893554443493,
+    "mean_absolute_spatial_contribution": 1.7710229503572918,
+    "mean_frequency_contribution": -1.5994786047376692,
+    "mean_spatial_contribution": 1.4949203880387358,
+    "sample_count": 256
+  },
+  "model": {
+    "architecture": "spatial-frequency-v1",
+    "checkpoint_sha256": "5e88b5568a403a13d6be22d505be6e1c1f64174379ff14e596dcf7fd73eb94d7",
+    "parameters": 76113,
+    "pretrained_weights": false
+  },
+  "threshold_selected_on_validation": 0.45035659677317963,
+  "training": "from_scratch",
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6174523615609695,
+      "validation_auroc": 0.7828366399953768
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.5518986315774437,
+      "validation_auroc": 0.8246378006461703
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.5141038583960781,
+      "validation_auroc": 0.8521875270259653
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.4902567812392298,
+      "validation_auroc": 0.8707086194795364
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.4738668455706555,
+      "validation_auroc": 0.8749870503888667
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.46004391005793577,
+      "validation_auroc": 0.8802145164023584
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.4530204121327902,
+      "validation_auroc": 0.8820749629120598
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.4497699363337435,
+      "validation_auroc": 0.8835344729566669
+    }
+  ],
+  "unseen_evaluation_limit": "SynthScars contains synthetic-only holdout images; pairing with CIFAKE real images introduces content, resolution, and source confounds, so this metric is diagnostic rather than a deployment claim.",
+  "unseen_synthscars_with_cifake_real_control": {
+    "auprc": 0.8543791529687527,
+    "auroc": 0.867246,
+    "balanced_accuracy": 0.796,
+    "brier": 0.14790817327528816,
+    "count": 2000,
+    "expected_calibration_error": 0.030163271502408474,
+    "f1": 0.7996070726915521,
+    "false_positive_rate_at_90_recall": 0.379,
+    "log_loss": 0.46098248099280087,
+    "negatives": 1000,
+    "positives": 1000,
+    "precision": 0.7857142857142857,
+    "recall": 0.814,
+    "recall_at_1_percent_false_positive_rate": 0.159,
+    "sensitivity": 0.814,
+    "specificity": 0.778
+  }
+}

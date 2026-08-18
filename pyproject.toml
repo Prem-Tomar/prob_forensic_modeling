@@ -13,6 +13,7 @@ dependencies = []
 
 [project.scripts]
 forensic-model = "forensic_model.cli:main"
+forensic-train-image = "forensic_model.neural_experiment:main"
 
 [project.optional-dependencies]
 common-images = ["Pillow>=10,<12"]

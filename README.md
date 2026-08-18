@@ -6,7 +6,7 @@ The project starts with an auditable image baseline, then adds provenance eviden
 
 ## Current status
 
-The dependency-free learning pipeline now covers manifest validation, an interpretable image model, held-out calibration and explanations, provenance fusion, unseen-family and processing-shift evaluation, and learned temporal video analysis. A procedural smoke report verifies mechanics. No real-world accuracy claim is valid until it is backed by an approved data manifest and versioned real-media evaluation.
+The library now includes the dependency-free pipeline plus an optional spatial-frequency detector trained from scratch. The first licensed benchmark reports 0.8878 clean CIFAKE AUROC, with substantial degradation under blur and resizing; see [docs/real_image_results.md](docs/real_image_results.md). This is a research baseline, not production assurance.
 
 ## Ground rules
 
@@ -50,3 +50,7 @@ PYTHONPATH=src python3 -m forensic_model.cli smoke-evaluate --output reports/smo
 ```
 
 This deterministic report validates the end-to-end experiment plumbing with procedural fixtures only. It is not evidence of real-world detector accuracy.
+
+## Reproduce the real-image baseline
+
+Install `requirements-neural.lock`, place the credited CIFAKE and SynthScars datasets under ignored local data directories, then follow [docs/neural_training.md](docs/neural_training.md). The `forensic-train-image` entry point trains from scratch and writes an aggregate report plus an ignored local checkpoint.

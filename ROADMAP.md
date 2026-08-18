@@ -7,14 +7,14 @@ Each phase is a learning milestone with an exit gate. A phase is complete only w
 | Phase | Implemented | Remaining exit gate |
 | --- | --- | --- |
 | 0 — Claim and data contract | Architecture, manifest licensing, split/leakage validation, metrics | Near-duplicate scan on approved real manifests |
-| 1 — Image MVP | Decoder boundary, versioned features, learned baseline, artifacts, tests | Approved real-media benchmark and acceptance metrics |
-| 2 — Stronger representations | Optional dependency track and replacement boundary documented | Licensed weights/data, neural adapter, spatial-frequency model, ablations |
+| 1 — Image MVP | Decoder boundary, learned baseline, tests, and deduplicated CIFAKE benchmark | Meet worst-slice acceptance metrics |
+| 2 — Stronger representations | Scratch spatial-frequency model, licensed adapters, calibration, checkpointing | Controlled ablations plus latency and memory results |
 | 3 — Provenance and confidence | Calibration, abstention, contributions, verifier protocol, late fusion | Production credential adapter and trust policy |
-| 4 — Robustness | Unseen-family slices, grouped uncertainty, deterministic pixel stresses | Real generator holdouts and codec-level processing matrix |
+| 4 — Robustness | Real CIFAKE stresses, grouped uncertainty, diagnostic SynthScars transfer | Generator holdouts, matched controls, codec matrix |
 | 5 — Video | Scene-aware sampling, learned temporal model, motion/flicker proxies, baseline comparison | Approved video holdouts, codec adapter, latency evaluation |
-| 6 — Release | Deterministic procedural smoke report and source digest | Locked full environment, licensed artifacts, real evaluation report |
+| 6 — Release | Smoke and real-image reports, dependency lock, licensed data inventory | Clean-machine reproduction, video report, release artifact |
 
-The implemented procedural path proves mechanics only. Rows remain open until their real-data or production-adapter gates are satisfied.
+The real-image report establishes a research baseline, not production assurance. Rows remain open until every listed robustness, provenance, video, and release gate is satisfied.
 
 ## Phase 0 — Frame the forensic claim
 

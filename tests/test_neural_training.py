@@ -49,6 +49,28 @@ class NeuralTrainingTests(unittest.TestCase):
         self.assertGreater(metrics.auroc, 0.95)
         self.assertEqual(detector.metadata()["initialization"], "scratch")
 
+    def test_recalibrates_after_validation_selected_blend(self) -> None:
+        from forensic_model.neural import NeuralConfig
+        from forensic_model.neural_training import (
+            TrainingConfig,
+            recalibrate_neural_detector,
+            train_neural_detector,
+        )
+
+        validation = PatternDataset(16)
+        detector = train_neural_detector(
+            PatternDataset(32),
+            validation,
+            training_config=TrainingConfig(seed=11, epochs=2, batch_size=8, learning_rate=0.01, cpu_threads=1),
+            model_config=NeuralConfig(spatial_widths=(4, 8), frequency_widths=(4, 8), dropout=0.0),
+        )
+        recalibrated = recalibrate_neural_detector(detector, validation, frequency_weight=0.25)
+
+        self.assertEqual(recalibrated.frequency_weight, 0.25)
+        self.assertEqual(recalibrated.metadata()["frequency_weight"], 0.25)
+        self.assertGreater(recalibrated.threshold, 0.0)
+        self.assertLess(recalibrated.threshold, 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

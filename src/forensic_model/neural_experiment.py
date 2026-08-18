@@ -29,9 +29,11 @@ from forensic_model.neural_data import (
 from forensic_model.neural_training import (
     TrainedNeuralDetector,
     TrainingConfig,
+    recalibrate_neural_detector,
     score_neural_detector,
     train_neural_detector,
 )
+from forensic_model.neural_robustness import select_frequency_weight
 
 
 def run_real_image_experiment(
@@ -48,6 +50,20 @@ def run_real_image_experiment(
     train = PillowImageDataset(bundle.train, training_transform())
     validation = PillowImageDataset(bundle.validation, evaluation_transform())
     detector = train_neural_detector(train, validation, training_config=training_config)
+    validation_sets = {
+        operation: PillowImageDataset(bundle.validation, evaluation_transform(operation=operation))
+        for operation in ("clean", "jpeg30", "blur1", "resize50")
+    }
+    branch_selection = select_frequency_weight(
+        detector.model,
+        validation_sets,
+        batch_size=training_config.batch_size,
+    )
+    detector = recalibrate_neural_detector(
+        detector,
+        validation_sets["clean"],
+        frequency_weight=branch_selection.frequency_weight,
+    )
 
     stress_metrics = {}
     clean_details: tuple[list[float], list[int], list[str]] | None = None
@@ -109,6 +125,7 @@ def run_real_image_experiment(
             for epoch in detector.history
         ],
         "calibration": detector.calibrator.to_dict(),
+        "robust_branch_selection": asdict(branch_selection),
         "threshold_selected_on_validation": detector.threshold,
         "cifake_test": stress_metrics,
         "clean_auroc_grouped_bootstrap_95_percent": asdict(interval),
@@ -155,7 +172,9 @@ def _calibrated_scores(
         shuffle=False,
         num_workers=0,
     )
-    scores, labels, groups = score_neural_detector(detector.model, loader)
+    scores, labels, groups = score_neural_detector(
+        detector.model, loader, frequency_weight=detector.frequency_weight
+    )
     return [detector.calibrator.transform(score) for score in scores], labels, groups
 
 

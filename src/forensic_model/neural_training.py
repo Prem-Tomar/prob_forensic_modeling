@@ -47,6 +47,7 @@ class TrainedNeuralDetector:
     threshold: float
     history: tuple[TrainingEpoch, ...]
     training_config: TrainingConfig
+    frequency_weight: float = 1.0
 
     def metadata(self) -> dict[str, str | int | float | bool]:
         return {
@@ -56,6 +57,7 @@ class TrainedNeuralDetector:
             "threshold": self.threshold,
             "calibration_slope": self.calibrator.slope,
             "calibration_intercept": self.calibrator.intercept,
+            "frequency_weight": self.frequency_weight,
         }
 
 
@@ -115,13 +117,18 @@ def train_neural_detector(
 def score_neural_detector(
     model: SpatialFrequencyDetector,
     loader: DataLoader,
+    *,
+    frequency_weight: float = 1.0,
 ) -> tuple[list[float], list[int], list[str]]:
+    if not 0.0 <= frequency_weight <= 1.0:
+        raise ValueError("frequency_weight must be within [0, 1]")
     model.eval()
     scores: list[float] = []
     labels: list[int] = []
     groups: list[str] = []
     for images, targets, identities in loader:
-        scores.extend(model(images).tolist())
+        evidence = model.forward_evidence(images)
+        scores.extend((evidence.spatial_contribution + frequency_weight * evidence.frequency_contribution).tolist())
         labels.extend(int(value) for value in targets.tolist())
         groups.extend(identities)
     return scores, labels, groups
@@ -132,9 +139,35 @@ def evaluate_neural_detector(
     dataset: Dataset,
 ) -> BinaryMetrics:
     loader = _loader(dataset, detector.training_config, shuffle=False)
-    scores, labels, _ = score_neural_detector(detector.model, loader)
+    scores, labels, _ = score_neural_detector(
+        detector.model, loader, frequency_weight=detector.frequency_weight
+    )
     probabilities = [detector.calibrator.transform(score) for score in scores]
     return binary_metrics(labels, probabilities, threshold=detector.threshold)
+
+
+def recalibrate_neural_detector(
+    detector: TrainedNeuralDetector,
+    validation_dataset: Dataset,
+    *,
+    frequency_weight: float,
+) -> TrainedNeuralDetector:
+    """Refit confidence and threshold after a validation-selected branch blend."""
+
+    loader = _loader(validation_dataset, detector.training_config, shuffle=False)
+    scores, labels, _ = score_neural_detector(
+        detector.model, loader, frequency_weight=frequency_weight
+    )
+    calibrator = PlattCalibrator.fit(scores, labels)
+    probabilities = [calibrator.transform(score) for score in scores]
+    return TrainedNeuralDetector(
+        detector.model,
+        calibrator,
+        balanced_accuracy_threshold(labels, probabilities),
+        detector.history,
+        detector.training_config,
+        frequency_weight,
+    )
 
 
 def balanced_accuracy_threshold(labels: Sequence[int], probabilities: Sequence[float]) -> float:

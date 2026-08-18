@@ -38,3 +38,7 @@ data/                  ignored local datasets and manifests
 6. Extend inference to temporal video evidence.
 
 The initial implementation intentionally avoids hidden downloads. Later model and dataset dependencies are introduced only after their licenses and hashes are recorded.
+
+## Library design
+
+`forensic_model` is an installable Python library. Stable public functions and typed result objects own validation, training, prediction, explanation, and evaluation; command-line entry points only translate files and arguments into those APIs. Applications can therefore embed the detector without parsing terminal output or depending on project scripts.

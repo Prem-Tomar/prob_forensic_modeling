@@ -28,4 +28,5 @@ Before training, record the source terms, allowed research/commercial use, redis
 - All derivatives of a content identity stay in one split.
 - Generator-holdout families are absent from train, validation, and calibration.
 - Real-source/device holdouts follow the same rule when those fields are available.
-- Perceptual near-duplicate scanning is a required later gate for real datasets; hashes alone cannot detect re-encoded copies.
+- Raw collections are deduplicated before manifest creation with `partition_candidates`. Exact-byte groups are kept in one deterministic split, while perceptual-hash collisions are reported for human review instead of being silently treated as identical.
+- Perceptual near-duplicate scanning remains a required gate because compact hashes can collide and exact hashes cannot detect every re-encoding.

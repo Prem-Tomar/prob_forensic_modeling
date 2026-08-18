@@ -6,7 +6,7 @@ The project starts with an auditable image baseline, then adds provenance eviden
 
 ## Current status
 
-The library now includes the dependency-free pipeline plus an optional spatial-frequency detector trained from scratch. The first licensed benchmark reports 0.8878 clean CIFAKE AUROC, with substantial degradation under blur and resizing; see [docs/real_image_results.md](docs/real_image_results.md). This is a research baseline, not production assurance.
+The library now includes the dependency-free pipeline plus optional image and temporal neural detectors trained from scratch. The image benchmark reports 0.8878 clean CIFAKE AUROC. The first Keling-to-Sora video holdout reports only 0.5752 AUROC, clearly exposing generator shift; see [docs/real_image_results.md](docs/real_image_results.md) and [docs/real_video_results.md](docs/real_video_results.md). Both are research baselines, not production assurance.
 
 ## Ground rules
 
@@ -54,3 +54,7 @@ This deterministic report validates the end-to-end experiment plumbing with proc
 ## Reproduce the real-image baseline
 
 Install `requirements-neural.lock`, place the credited CIFAKE and SynthScars datasets under ignored local data directories, then follow [docs/neural_training.md](docs/neural_training.md). The `forensic-train-image` entry point trains from scratch and writes an aggregate report plus an ignored local checkpoint.
+
+## Reproduce the real-video baseline
+
+Install the same lock file, add the credited DAVIS 2017 and GenVidBench subsets under ignored local data directories, then follow [docs/real_video_results.md](docs/real_video_results.md). The `forensic-train-video` entry point performs source-grouped training, validation-only calibration, unseen-generator evaluation, and post-processing stress tests.

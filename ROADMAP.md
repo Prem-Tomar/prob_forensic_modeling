@@ -11,8 +11,8 @@ Each phase is a learning milestone with an exit gate. A phase is complete only w
 | 2 — Stronger representations | Scratch spatial-frequency model, licensed adapters, calibration, checkpointing | Controlled ablations plus latency and memory results |
 | 3 — Provenance and confidence | Calibration, abstention, contributions, verifier protocol, late fusion | Production credential adapter and trust policy |
 | 4 — Robustness | Real CIFAKE stresses, grouped uncertainty, diagnostic SynthScars transfer | Generator holdouts, matched controls, codec matrix |
-| 5 — Video | Scene-aware sampling, learned temporal model, motion/flicker proxies, baseline comparison | Approved video holdouts, codec adapter, latency evaluation |
-| 6 — Release | Smoke and real-image reports, dependency lock, licensed data inventory | Clean-machine reproduction, video report, release artifact |
+| 5 — Video | Scene-aware and uniform sampling, PyAV adapter, audited DAVIS/Keling/Sora holdouts, scratch temporal model, stress report | Beat matched frame aggregation; add matched controls and latency |
+| 6 — Release | Smoke, real-image, and real-video reports; dependency lock; licensed data inventory | Clean-machine reproduction and scoped release artifact |
 
 The real-image report establishes a research baseline, not production assurance. Rows remain open until every listed robustness, provenance, video, and release gate is satisfied.
 

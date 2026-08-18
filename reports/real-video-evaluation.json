@@ -1,0 +1,302 @@
+{
+  "artifact_scope": "non-commercial-research_due_to_training_data_license",
+  "attribution": [
+    {
+      "citation": "Pont-Tuset, J. et al. (2017), The 2017 DAVIS Challenge on Video Object Segmentation.",
+      "license_id": "CC-BY-NC-4.0",
+      "name": "DAVIS 2017",
+      "source_url": "https://davischallenge.org/davis2017/code.html"
+    },
+    {
+      "citation": "Ni, Z.-L. et al. (2026), GenVidBench, AAAI.",
+      "license_id": "CC-BY-NC-4.0",
+      "name": "GenVidBench",
+      "source_url": "https://github.com/genvidbench/GenVidBench"
+    }
+  ],
+  "calibration": {
+    "intercept": 2.0263008303217647,
+    "method": "platt",
+    "slope": 1.6024860756241694
+  },
+  "claim_scope": "research_baseline_not_production_assurance",
+  "clean_auroc_grouped_bootstrap_95_percent": {
+    "confidence": 0.95,
+    "estimate": 0.5752314814814815,
+    "lower": 0.3940999621909722,
+    "successful_resamples": 500,
+    "upper": 0.7314665032679737
+  },
+  "configuration": {
+    "batch_size": 8,
+    "cpu_threads": 8,
+    "epochs": 20,
+    "frame_count": 8,
+    "image_size": 32,
+    "learning_rate": 0.001,
+    "patience": 5,
+    "seed": 20260818,
+    "weight_decay": 0.0001
+  },
+  "cross_generator_test": {
+    "blur1": {
+      "auprc": 0.7474157224668934,
+      "auroc": 0.5787037037037037,
+      "balanced_accuracy": 0.4826388888888889,
+      "brier": 0.30706266465089266,
+      "count": 66,
+      "expected_calibration_error": 0.3335580804487751,
+      "f1": 0.29508196721311475,
+      "false_positive_rate_at_90_recall": 0.7222222222222222,
+      "log_loss": 1.0378345747106394,
+      "negatives": 18,
+      "positives": 48,
+      "precision": 0.6923076923076923,
+      "recall": 0.1875,
+      "recall_at_1_percent_false_positive_rate": 0.0,
+      "sensitivity": 0.1875,
+      "specificity": 0.7777777777777778
+    },
+    "clean": {
+      "auprc": 0.7445472722194109,
+      "auroc": 0.5752314814814815,
+      "balanced_accuracy": 0.4826388888888889,
+      "brier": 0.3083130082404908,
+      "count": 66,
+      "expected_calibration_error": 0.3480459380918432,
+      "f1": 0.29508196721311475,
+      "false_positive_rate_at_90_recall": 0.7222222222222222,
+      "log_loss": 1.0414387552791198,
+      "negatives": 18,
+      "positives": 48,
+      "precision": 0.6923076923076923,
+      "recall": 0.1875,
+      "recall_at_1_percent_false_positive_rate": 0.0,
+      "sensitivity": 0.1875,
+      "specificity": 0.7777777777777778
+    },
+    "jpeg30": {
+      "auprc": 0.7448740696050318,
+      "auroc": 0.5763888888888888,
+      "balanced_accuracy": 0.4826388888888889,
+      "brier": 0.30673216429246386,
+      "count": 66,
+      "expected_calibration_error": 0.3465294035245338,
+      "f1": 0.29508196721311475,
+      "false_positive_rate_at_90_recall": 0.7222222222222222,
+      "log_loss": 1.0360048275486238,
+      "negatives": 18,
+      "positives": 48,
+      "precision": 0.6923076923076923,
+      "recall": 0.1875,
+      "recall_at_1_percent_false_positive_rate": 0.0,
+      "sensitivity": 0.1875,
+      "specificity": 0.7777777777777778
+    },
+    "resize50": {
+      "auprc": 0.744467565539991,
+      "auroc": 0.5752314814814815,
+      "balanced_accuracy": 0.4826388888888889,
+      "brier": 0.3099339611425116,
+      "count": 66,
+      "expected_calibration_error": 0.34924395753554066,
+      "f1": 0.29508196721311475,
+      "false_positive_rate_at_90_recall": 0.7222222222222222,
+      "log_loss": 1.0453787927856915,
+      "negatives": 18,
+      "positives": 48,
+      "precision": 0.6923076923076923,
+      "recall": 0.1875,
+      "recall_at_1_percent_false_positive_rate": 0.0,
+      "sensitivity": 0.1875,
+      "specificity": 0.7777777777777778
+    },
+    "sparse4": {
+      "auprc": 0.7643765099460184,
+      "auroc": 0.5729166666666666,
+      "balanced_accuracy": 0.5138888888888888,
+      "brier": 0.33486107002078314,
+      "count": 66,
+      "expected_calibration_error": 0.34689547555722805,
+      "f1": 0.375,
+      "false_positive_rate_at_90_recall": 0.7222222222222222,
+      "log_loss": 1.118114836977524,
+      "negatives": 18,
+      "positives": 48,
+      "precision": 0.75,
+      "recall": 0.25,
+      "recall_at_1_percent_false_positive_rate": 0.0,
+      "sensitivity": 0.25,
+      "specificity": 0.7777777777777778
+    }
+  },
+  "data_audit": {
+    "discovered": 363,
+    "duplicates_removed": 0,
+    "exclusions": 5,
+    "retained": 358,
+    "source_counts": {
+      "DAVIS-2017": 90,
+      "GenVidBench-Keling": 220,
+      "GenVidBench-Sora": 48
+    },
+    "split_counts": {
+      "test": 66,
+      "train": 233,
+      "validation": 59
+    }
+  },
+  "environment": {
+    "device": "cpu",
+    "pillow": "11.3.0",
+    "pyav": "15.1.0",
+    "python": "3.9.6",
+    "torch": "2.7.1"
+  },
+  "evaluation_limit": "Generated and real labels come from different source datasets. Sora is unseen during training, but content, codec, duration, and collection-source confounds remain; results are diagnostic, not a deployment or generator-attribution claim.",
+  "explanation_summary": {
+    "mean_absolute_frame_contribution": 1.0524990278663058,
+    "mean_absolute_temporal_contribution": 1.7833828842549613,
+    "sample_count": 66
+  },
+  "model": {
+    "architecture": "temporal-residual-v1",
+    "checkpoint_sha256": "aa26276ee1901f0ddb6929b407f1b089e59b09f8f0ef10c21c5aaeb51b675e9e",
+    "parameters": 21322,
+    "pretrained_weights": false
+  },
+  "source_summary": {
+    "DAVIS-2017": {
+      "count": 18,
+      "mean_probability_synthetic": 0.474752452506563
+    },
+    "GenVidBench-Sora": {
+      "count": 48,
+      "mean_probability_synthetic": 0.5617481215170776
+    }
+  },
+  "threshold_selected_on_validation": 0.8991491532626936,
+  "training": "from_scratch",
+  "training_history": [
+    {
+      "elapsed_seconds": 267.892960041,
+      "epoch": 1,
+      "train_loss": 0.358193770242863,
+      "validation_auroc": 0.7021276595744681
+    },
+    {
+      "elapsed_seconds": 0.6027547090000098,
+      "epoch": 2,
+      "train_loss": 0.35662353249834333,
+      "validation_auroc": 0.7269503546099291
+    },
+    {
+      "elapsed_seconds": 0.5920573750000244,
+      "epoch": 3,
+      "train_loss": 0.3563164697056676,
+      "validation_auroc": 0.74822695035461
+    },
+    {
+      "elapsed_seconds": 0.5908745840000051,
+      "epoch": 4,
+      "train_loss": 0.3542642984139561,
+      "validation_auroc": 0.7783687943262412
+    },
+    {
+      "elapsed_seconds": 0.590393792000043,
+      "epoch": 5,
+      "train_loss": 0.3527672174406666,
+      "validation_auroc": 0.7819148936170213
+    },
+    {
+      "elapsed_seconds": 0.5927975410000386,
+      "epoch": 6,
+      "train_loss": 0.34404345349180854,
+      "validation_auroc": 0.7695035460992907
+    },
+    {
+      "elapsed_seconds": 0.5947066250000148,
+      "epoch": 7,
+      "train_loss": 0.3282598537820603,
+      "validation_auroc": 0.7801418439716312
+    },
+    {
+      "elapsed_seconds": 0.5888982089999786,
+      "epoch": 8,
+      "train_loss": 0.2957593559451369,
+      "validation_auroc": 0.8475177304964538
+    },
+    {
+      "elapsed_seconds": 0.5918712079999864,
+      "epoch": 9,
+      "train_loss": 0.2885441928462409,
+      "validation_auroc": 0.8546099290780141
+    },
+    {
+      "elapsed_seconds": 0.5929394579999894,
+      "epoch": 10,
+      "train_loss": 0.2537178193167044,
+      "validation_auroc": 0.8670212765957447
+    },
+    {
+      "elapsed_seconds": 0.59071449999999,
+      "epoch": 11,
+      "train_loss": 0.24115284295680697,
+      "validation_auroc": 0.898936170212766
+    },
+    {
+      "elapsed_seconds": 0.5911050409999916,
+      "epoch": 12,
+      "train_loss": 0.22852753654378166,
+      "validation_auroc": 0.9078014184397163
+    },
+    {
+      "elapsed_seconds": 0.5901008749999619,
+      "epoch": 13,
+      "train_loss": 0.21171976542779816,
+      "validation_auroc": 0.9290780141843972
+    },
+    {
+      "elapsed_seconds": 0.6342189169999983,
+      "epoch": 14,
+      "train_loss": 0.203702657391585,
+      "validation_auroc": 0.9060283687943262
+    },
+    {
+      "elapsed_seconds": 0.6180120420000321,
+      "epoch": 15,
+      "train_loss": 0.21508901991557666,
+      "validation_auroc": 0.9273049645390071
+    },
+    {
+      "elapsed_seconds": 0.5948782499999652,
+      "epoch": 16,
+      "train_loss": 0.20560916626722003,
+      "validation_auroc": 0.9308510638297872
+    },
+    {
+      "elapsed_seconds": 0.5923197500000015,
+      "epoch": 17,
+      "train_loss": 0.20072873152568615,
+      "validation_auroc": 0.9273049645390071
+    },
+    {
+      "elapsed_seconds": 0.5906402499999786,
+      "epoch": 18,
+      "train_loss": 0.1903378222889143,
+      "validation_auroc": 0.9290780141843972
+    },
+    {
+      "elapsed_seconds": 0.5916719580000063,
+      "epoch": 19,
+      "train_loss": 0.18954776316709304,
+      "validation_auroc": 0.9290780141843972
+    },
+    {
+      "elapsed_seconds": 0.591723375000015,
+      "epoch": 20,
+      "train_loss": 0.18720905233350435,
+      "validation_auroc": 0.9290780141843972
+    }
+  ]
+}

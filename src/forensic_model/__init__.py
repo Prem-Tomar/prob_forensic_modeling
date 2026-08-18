@@ -1,5 +1,7 @@
 """Public library API for learned forensic modeling."""
 
+from forensic_model.calibration import PlattCalibrator
+from forensic_model.decision import DecisionPolicy, DetectionResult, Reason
 from forensic_model.detector import ImageDetector
 from forensic_model.features import FEATURE_NAMES, FEATURE_VERSION, FeatureVector, extract_features
 from forensic_model.image import ImageDecodeError, ImageDecoder, PPMDecoder, RGBImage
@@ -17,8 +19,12 @@ __all__ = [
     "ManifestError",
     "PPMDecoder",
     "Prediction",
+    "PlattCalibrator",
     "RGBImage",
+    "Reason",
     "Sample",
+    "DecisionPolicy",
+    "DetectionResult",
     "extract_features",
     "load_manifest",
     "manifest_digest",

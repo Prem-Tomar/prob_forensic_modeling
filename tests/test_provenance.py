@@ -70,6 +70,14 @@ class ProvenanceTests(unittest.TestCase):
         result = fuse_evidence(pixel("camera_or_human"), evidence)
         self.assertEqual(result.decision, "abstain")
 
+    def test_non_verifying_states_leave_pixel_evidence_visible(self) -> None:
+        for status in (ProvenanceStatus.UNSUPPORTED, ProvenanceStatus.INDETERMINATE):
+            with self.subTest(status=status):
+                evidence = ProvenanceEvidence(status, "a" * 64)
+                result = fuse_evidence(pixel("synthetic"), evidence)
+                self.assertEqual(result.decision, "synthetic")
+                self.assertFalse(result.conflict)
+
 
 if __name__ == "__main__":
     unittest.main()

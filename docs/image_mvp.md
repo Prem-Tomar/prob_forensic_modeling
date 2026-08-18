@@ -2,7 +2,7 @@
 
 ## What it teaches
 
-The first model is standardized logistic regression over ten deterministic image summaries. It makes the entire learning loop inspectable: decoding, feature versioning, fitting, serialization, probability scoring, and per-feature contributions.
+The first model is standardized logistic regression over ten deterministic image summaries. It makes the entire learning loop inspectable: decoding, feature versioning, fitting, serialization, probability scoring, and per-feature contributions. Standardized inference values are clipped at a serialized bound so an out-of-range feature cannot dominate the score without limit.
 
 The summaries cover channel means, luminance variance, saturation, horizontal/vertical residuals, Laplacian energy, checkerboard energy, and clipped channels. These signals are deliberately simple. They establish an auditable baseline and can reveal dataset shortcuts; they are not expected to solve unseen-generator detection alone.
 

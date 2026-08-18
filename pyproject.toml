@@ -11,6 +11,9 @@ requires-python = ">=3.9"
 license = { text = "MIT" }
 dependencies = []
 
+[project.scripts]
+forensic-model = "forensic_model.cli:main"
+
 [project.optional-dependencies]
 common-images = ["Pillow>=10,<12"]
 neural = ["torch>=2.2,<3", "torchvision>=0.17,<1"]

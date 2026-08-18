@@ -3,6 +3,7 @@
 from forensic_model.calibration import PlattCalibrator
 from forensic_model.decision import DecisionPolicy, DetectionResult, Reason
 from forensic_model.detector import ImageDetector
+from forensic_model.experiment import run_smoke_evaluation
 from forensic_model.features import FEATURE_NAMES, FEATURE_VERSION, FeatureVector, extract_features
 from forensic_model.image import ImageDecodeError, ImageDecoder, PPMDecoder, RGBImage
 from forensic_model.manifest import ManifestError, Sample, load_manifest, manifest_digest, validate_manifest
@@ -83,6 +84,7 @@ __all__ = [
     "grouped_bootstrap_interval",
     "load_manifest",
     "manifest_digest",
+    "run_smoke_evaluation",
     "sample_frames",
     "validate_manifest",
 ]

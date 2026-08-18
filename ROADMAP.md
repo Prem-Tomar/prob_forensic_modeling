@@ -2,6 +2,20 @@
 
 Each phase is a learning milestone with an exit gate. A phase is complete only when its code, tests, documentation, and reproducible report satisfy the gate.
 
+## Implementation status
+
+| Phase | Implemented | Remaining exit gate |
+| --- | --- | --- |
+| 0 — Claim and data contract | Architecture, manifest licensing, split/leakage validation, metrics | Near-duplicate scan on approved real manifests |
+| 1 — Image MVP | Decoder boundary, versioned features, learned baseline, artifacts, tests | Approved real-media benchmark and acceptance metrics |
+| 2 — Stronger representations | Optional dependency track and replacement boundary documented | Licensed weights/data, neural adapter, spatial-frequency model, ablations |
+| 3 — Provenance and confidence | Calibration, abstention, contributions, verifier protocol, late fusion | Production credential adapter and trust policy |
+| 4 — Robustness | Unseen-family slices, grouped uncertainty, deterministic pixel stresses | Real generator holdouts and codec-level processing matrix |
+| 5 — Video | Scene-aware sampling, learned temporal model, motion/flicker proxies, baseline comparison | Approved video holdouts, codec adapter, latency evaluation |
+| 6 — Release | Deterministic procedural smoke report and source digest | Locked full environment, licensed artifacts, real evaluation report |
+
+The implemented procedural path proves mechanics only. Rows remain open until their real-data or production-adapter gates are satisfied.
+
 ## Phase 0 — Frame the forensic claim
 
 Learn how leakage, generator memorization, prevalence, and threshold selection can make a detector look stronger than it is.

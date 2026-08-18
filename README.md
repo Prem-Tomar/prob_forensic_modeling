@@ -6,7 +6,7 @@ The project starts with an auditable image baseline, then adds provenance eviden
 
 ## Current status
 
-The repository is in Phase 0: architecture and evaluation design. No accuracy claim is valid until it is backed by a versioned evaluation report and an approved data manifest.
+The dependency-free learning pipeline now covers manifest validation, an interpretable image model, held-out calibration and explanations, provenance fusion, unseen-family and processing-shift evaluation, and learned temporal video analysis. A procedural smoke report verifies mechanics. No real-world accuracy claim is valid until it is backed by an approved data manifest and versioned real-media evaluation.
 
 ## Ground rules
 
@@ -42,3 +42,11 @@ The initial implementation intentionally avoids hidden downloads. Later model an
 ## Library design
 
 `forensic_model` is an installable Python library. Stable public functions and typed result objects own validation, training, prediction, explanation, and evaluation; command-line entry points only translate files and arguments into those APIs. Applications can therefore embed the detector without parsing terminal output or depending on project scripts.
+
+## Reproduce the smoke evaluation
+
+```bash
+PYTHONPATH=src python3 -m forensic_model.cli smoke-evaluate --output reports/smoke-evaluation.json
+```
+
+This deterministic report validates the end-to-end experiment plumbing with procedural fixtures only. It is not evidence of real-world detector accuracy.

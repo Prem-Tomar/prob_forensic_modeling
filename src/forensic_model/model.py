@@ -26,6 +26,7 @@ class LogisticModel:
     weights: tuple[float, ...]
     bias: float
     feature_version: str = FEATURE_VERSION
+    standardized_clip: float = 8.0
 
     @classmethod
     def fit(
@@ -69,7 +70,10 @@ class LogisticModel:
     def predict(self, features: FeatureVector) -> Prediction:
         if features.names != self.feature_names or features.version != self.feature_version:
             raise ValueError("feature schema does not match the model")
-        standardized = tuple((value - mean) / scale for value, mean, scale in zip(features.values, self.means, self.scales))
+        standardized = tuple(
+            max(-self.standardized_clip, min(self.standardized_clip, (value - mean) / scale))
+            for value, mean, scale in zip(features.values, self.means, self.scales)
+        )
         contributions = {name: weight * value for name, weight, value in zip(self.feature_names, self.weights, standardized)}
         score = self.bias + sum(contributions.values())
         return Prediction(_sigmoid(score), score, contributions)
@@ -83,6 +87,7 @@ class LogisticModel:
             "scales": list(self.scales),
             "weights": list(self.weights),
             "bias": self.bias,
+            "standardized_clip": self.standardized_clip,
         }
 
     @classmethod
@@ -99,13 +104,16 @@ class LogisticModel:
             weights=tuple(float(value) for value in _list(values, "weights")),
             bias=float(values["bias"]),
             feature_version=feature_version,
+            standardized_clip=float(values.get("standardized_clip", 8.0)),
         )
         lengths = {len(model.feature_names), len(model.means), len(model.scales), len(model.weights)}
-        numeric = model.means + model.scales + model.weights + (model.bias,)
+        numeric = model.means + model.scales + model.weights + (model.bias, model.standardized_clip)
         if lengths != {len(model.feature_names)} or not model.feature_names:
             raise ValueError("model parameter lengths must match and be non-empty")
         if any(not math.isfinite(value) for value in numeric) or any(scale <= 0.0 for scale in model.scales):
             raise ValueError("model parameters must be finite and scales must be positive")
+        if model.standardized_clip <= 0.0:
+            raise ValueError("standardized_clip must be positive")
         return model
 
 

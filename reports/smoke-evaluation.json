@@ -197,7 +197,7 @@
       }
     }
   },
-  "implementation_sha256": "29c43b1307b0df89fac783cb83fe2b6523ae1c03131664f1a920421af73aed22",
+  "implementation_sha256": "3bb127fd4bf446caeb3cd536825bc2279c7d375f421186d2b5e27047ab405d5c",
   "limitations": [
     "procedural fixtures validate software mechanics, not real-world detection quality",
     "no third-party dataset, pretrained weight, credential, or codec is used",

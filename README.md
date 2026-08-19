@@ -6,7 +6,7 @@ The project starts with an auditable image baseline, then adds provenance eviden
 
 ## Current status
 
-The library now includes the dependency-free pipeline plus optional image and temporal neural detectors trained from scratch. The image benchmark reports 0.8878 clean CIFAKE AUROC. The first Keling-to-Sora video holdout reports only 0.5752 AUROC, clearly exposing generator shift; see [docs/real_image_results.md](docs/real_image_results.md) and [docs/real_video_results.md](docs/real_video_results.md). Both are research baselines, not production assurance.
+The library now includes dependency-free and neural image/video detectors trained from scratch. The neural image model improves matched CIFAKE clean AUROC from 0.7804 to 0.8244 and remains at or above 0.7954 across a 12-operation post-processing matrix, but trails the simple feature model on the diagnostic SynthScars pairing, 0.7232 versus 0.9284. On the Keling-to-Sora video holdout, adding Keling I2V mode diversity improves temporal AUROC from 0.5752 to 0.6273, while frozen frame aggregation remains stronger at 0.7442. Both stronger-model adoption gates therefore remain open; see [docs/feature_baseline_results.md](docs/feature_baseline_results.md), [docs/image_stress_results.md](docs/image_stress_results.md), [docs/real_image_results.md](docs/real_image_results.md), and [docs/real_video_results.md](docs/real_video_results.md). These are research baselines, not production assurance.
 
 ## Ground rules
 
@@ -23,9 +23,9 @@ The library now includes the dependency-free pipeline plus optional image and te
 docs/                 architecture, evaluation, and data governance
 src/forensic_model/   reusable training and inference code
 tests/                small deterministic tests
-scripts/              reproducible local entry points
 artifacts/             ignored local models and reports
 data/                  ignored local datasets and manifests
+requirements-*.lock   pinned build and neural environments
 ```
 
 ## Development sequence
@@ -53,8 +53,48 @@ This deterministic report validates the end-to-end experiment plumbing with proc
 
 ## Reproduce the real-image baseline
 
-Install `requirements-neural.lock`, place the credited CIFAKE and SynthScars datasets under ignored local data directories, then follow [docs/neural_training.md](docs/neural_training.md). The `forensic-train-image` entry point trains from scratch and writes an aggregate report plus an ignored local checkpoint.
+Install `requirements-neural.lock`, place the credited CIFAKE and SynthScars datasets under ignored local data directories, then follow [docs/neural_training.md](docs/neural_training.md). `forensic-train-feature-baseline` and `forensic-train-image` train the matched Phase 1 and neural models from scratch and write aggregate reports plus ignored local artifacts.
+
+Applications with the neural extra installed can load the calibrated checkpoint directly:
+
+```python
+from pathlib import Path
+from forensic_model.neural_inference import CalibratedNeuralImageDetector
+
+detector = CalibratedNeuralImageDetector.load(Path("artifacts/spatial-frequency-v1.pt"))
+result = detector.predict_file(Path("candidate.jpg"))
+print(result.decision, result.probability_synthetic)
+print(result.spatial_contribution, result.deployed_frequency_contribution)
+```
+
+`forensic-benchmark-image` measures this same public inference path, including both in-memory batch throughput and local file decode-to-decision latency.
+
+`forensic-evaluate-image-stress` evaluates the frozen neural and Phase 1 artifacts on identical clean and transformed rows. It reports complete metrics, identity-group bootstrap intervals, and paired probability shifts without retraining or retuning either model.
+
+`forensic-review-image-collisions` creates a path-free aggregate inventory of perceptual-hash collisions and an optional ignored contact sheet. Compact-hash collisions are measured and reviewed; they are never silently merged.
 
 ## Reproduce the real-video baseline
 
 Install the same lock file, add the credited DAVIS 2017 and GenVidBench subsets under ignored local data directories, then follow [docs/real_video_results.md](docs/real_video_results.md). The `forensic-train-video` entry point performs source-grouped training, validation-only calibration, unseen-generator evaluation, and post-processing stress tests.
+
+## Build an offline-installable library wheel
+
+Install `requirements-build.lock` in a dedicated local build environment, then run:
+
+```bash
+PYTHONPATH=src python -m forensic_model.release \
+  --source-root . \
+  --output-directory artifacts/release \
+  --manifest reports/release-build.json
+```
+
+The builder stages only `pyproject.toml`, `README.md`, and `src/` in a temporary directory, disables build isolation to prevent hidden dependency downloads, and records the wheel and lock-file hashes. See [docs/reproducibility.md](docs/reproducibility.md) and [docs/completion_audit.md](docs/completion_audit.md) for the verified scope and remaining gates.
+
+Verify the wheel in a newly created dependency-free environment:
+
+```bash
+PYTHONPATH=src python -m forensic_model.release_verify \
+  --wheel artifacts/release/prob_forensic_modeling-0.1.0-py3-none-any.whl \
+  --expected-smoke-report reports/smoke-evaluation.json \
+  --output reports/release-verification.json
+```

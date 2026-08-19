@@ -1,8 +1,8 @@
 {
-  "expected_smoke_sha256": "9061556f90da82f77efd2b4feaad6340ee84ce4ab6fc6c6cf6d059978f80a0bc",
+  "expected_smoke_sha256": "33f3f768186c15e66b1a5f08976fcff9f191851dbd88fa04a4c868ef4d737234",
   "install_mode": "local_wheel_no_index_no_dependencies",
-  "installed_smoke_sha256": "9061556f90da82f77efd2b4feaad6340ee84ce4ab6fc6c6cf6d059978f80a0bc",
+  "installed_smoke_sha256": "33f3f768186c15e66b1a5f08976fcff9f191851dbd88fa04a4c868ef4d737234",
   "smoke_report_byte_identical": true,
   "wheel_filename": "prob_forensic_modeling-0.1.0-py3-none-any.whl",
-  "wheel_sha256": "f41eb958b8590bbc9dd3035848be81b959eaa62a3764a2b018a94b9a89c342c4"
+  "wheel_sha256": "6cd459ca66815712ac60f3da57684eee0acd98c60af62f12b793a58109b7ca60"
 }

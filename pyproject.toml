@@ -8,19 +8,27 @@ version = "0.1.0"
 description = "Reproducible learned forensic models for synthetic media detection"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "MIT" }
+license = "MIT"
 dependencies = []
 
 [project.scripts]
 forensic-model = "forensic_model.cli:main"
+forensic-benchmark-image = "forensic_model.neural_benchmark:main"
+forensic-build-release = "forensic_model.release:main"
+forensic-train-feature-baseline = "forensic_model.feature_baseline_experiment:main"
+forensic-verify-release = "forensic_model.release_verify:main"
 forensic-train-image = "forensic_model.neural_experiment:main"
 forensic-train-video = "forensic_model.neural_video_experiment:main"
+forensic-evaluate-video-frames = "forensic_model.neural_video_baseline_experiment:main"
+forensic-evaluate-image-stress = "forensic_model.image_stress_experiment:main"
+forensic-review-image-collisions = "forensic_model.near_duplicate_review:main"
 
 [project.optional-dependencies]
 common-images = ["Pillow>=10,<12"]
 neural = ["torch>=2.2,<3", "torchvision>=0.17,<1"]
 video = ["av>=15,<16", "Pillow>=10,<12", "torch>=2.2,<3", "torchvision>=0.17,<1"]
 dev = ["pytest>=8,<9", "ruff>=0.6,<1", "mypy>=1.11,<2"]
+release = ["build>=1.5,<2", "wheel>=0.47,<1"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

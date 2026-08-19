@@ -69,9 +69,9 @@ def score_frame_aggregation(
 ) -> tuple[list[float], list[int], list[str]]:
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")
-    probabilities = []
-    labels = []
-    groups = []
+    probabilities: list[float] = []
+    labels: list[int] = []
+    groups: list[str] = []
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=0)
     aggregator.model.eval()
     for clips, targets, identities in loader:

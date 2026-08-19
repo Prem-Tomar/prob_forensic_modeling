@@ -1,0 +1,86 @@
+{
+  "checkpoint_sha256": "fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a",
+  "claim_scope": "local_cpu_measurement_not_capacity_planning",
+  "configuration": {
+    "batch_size": 64,
+    "cpu_threads": 8,
+    "file_iterations": 64,
+    "image_size": 32,
+    "seed": 20260818,
+    "tensor_iterations": 50,
+    "warmup_iterations": 5
+  },
+  "environment": {
+    "device": "cpu",
+    "machine": "arm64",
+    "operating_system": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.9.6",
+    "torch": "2.7.1"
+  },
+  "file_inference": {
+    "items_per_iteration": 1,
+    "items_per_second": 1218.8937366154992,
+    "iterations": 64,
+    "mean_milliseconds_per_item": 0.8204160625000001,
+    "median_iteration_milliseconds": 0.7976669999999999,
+    "p95_iteration_milliseconds": 0.939917,
+    "total_items": 64,
+    "total_seconds": 0.05250662800000001
+  },
+  "measurement_scope": {
+    "file": "local file open, RGB conversion, deterministic resize, calibrated decision",
+    "file_cache_state": "warm operating-system file cache after explicit warmup",
+    "tensor": "calibrated batch decision from an in-memory float32 RGB tensor"
+  },
+  "memory": {
+    "checkpoint_file_bytes": 310717,
+    "input_batch_bytes": 786432,
+    "model_buffer_bytes": 0,
+    "model_parameter_bytes": 304452,
+    "peak_process_rss_bytes": 343523328
+  },
+  "sample_files": [
+    "data/raw/cifake/DATASET/test/FAKE/0 (10).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (2).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (3).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (4).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (5).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (6).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (7).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (8).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0 (9).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/0.jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (10).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (2).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (3).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (4).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (5).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (6).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (7).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (8).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1 (9).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/1.jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (10).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (2).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (3).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (4).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (5).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (6).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (7).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (8).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10 (9).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/10.jpg",
+    "data/raw/cifake/DATASET/test/FAKE/100 (10).jpg",
+    "data/raw/cifake/DATASET/test/FAKE/100 (2).jpg"
+  ],
+  "tensor_inference": {
+    "items_per_iteration": 64,
+    "items_per_second": 2708.3175780132037,
+    "iterations": 50,
+    "mean_milliseconds_per_item": 0.36923291718750006,
+    "median_iteration_milliseconds": 23.636646,
+    "p95_iteration_milliseconds": 23.951166999999998,
+    "total_items": 3200,
+    "total_seconds": 1.1815453350000003
+  }
+}

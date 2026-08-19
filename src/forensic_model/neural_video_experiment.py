@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import platform
+import time
 from dataclasses import asdict
 from pathlib import Path
 from typing import Sequence
@@ -38,7 +39,7 @@ def run_real_video_experiment(
     frame_count: int = 8,
     image_size: int = 32,
 ) -> dict[str, object]:
-    """Train on DAVIS/Keling and test once on held-out DAVIS/Sora sources."""
+    """Train on DAVIS/Keling T2V+I2V and test once on held-out DAVIS/Sora sources."""
 
     bundle = discover_video_benchmark(davis_root, keling_root, sora_root)
     train = VideoTensorDataset(
@@ -93,11 +94,19 @@ def run_real_video_experiment(
         detector,
         VideoTensorDataset(bundle.test, frame_count=frame_count, image_size=image_size, cache=True),
     )
+    generated_test = tuple(example for example in bundle.test if example.media_type == "video")
+    generated_duration = sum(_duration_seconds(example.path) for example in generated_test)
+    generated_started = time.monotonic()
+    _calibrated_scores(
+        detector,
+        VideoTensorDataset(generated_test, frame_count=frame_count, image_size=image_size),
+    )
+    generated_elapsed = time.monotonic() - generated_started
 
     metadata = detector.metadata()
     metadata.update(
         {
-            "dataset": "DAVIS-2017+GenVidBench-Keling",
+            "dataset": "DAVIS-2017+GenVidBench-Keling-T2V+I2V",
             "training_data_license": "CC-BY-NC-4.0",
             "usage_scope": "non-commercial-research",
             "frame_count": frame_count,
@@ -136,6 +145,11 @@ def run_real_video_experiment(
         "clean_auroc_grouped_bootstrap_95_percent": asdict(interval),
         "source_summary": source_summary,
         "explanation_summary": explanations,
+        "timing": {
+            "generated_test_duration_seconds": generated_duration,
+            "generated_decode_inference_seconds": generated_elapsed,
+            "seconds_per_input_minute": generated_elapsed / (generated_duration / 60.0),
+        },
         "evaluation_limit": (
             "Generated and real labels come from different source datasets. Sora is unseen during training, but "
             "content, codec, duration, and collection-source confounds remain; results are diagnostic, not a "
@@ -196,7 +210,7 @@ def _calibrated_scores(
 def _source_summary(bundle: VideoDatasetBundle, probabilities: Sequence[float]) -> dict[str, dict[str, float | int]]:
     if len(bundle.test) != len(probabilities):
         raise ValueError("test examples and probabilities must align")
-    by_source = {}
+    by_source: dict[str, list[float]] = {}
     for example, probability in zip(bundle.test, probabilities):
         by_source.setdefault(example.source, []).append(probability)
     return {
@@ -234,6 +248,13 @@ def _sha256(path: Path) -> str:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _duration_seconds(path: Path) -> float:
+    with av.open(str(path)) as container:
+        if container.duration is None:
+            raise ValueError(f"video duration is unavailable: {path}")
+        return float(container.duration / av.time_base)
 
 
 if __name__ == "__main__":

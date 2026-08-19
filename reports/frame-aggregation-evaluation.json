@@ -1,0 +1,84 @@
+{
+  "attribution": [
+    {
+      "citation": "Pont-Tuset, J. et al. (2017), The 2017 DAVIS Challenge on Video Object Segmentation.",
+      "license_id": "CC-BY-NC-4.0",
+      "name": "DAVIS 2017",
+      "source_url": "https://davischallenge.org/davis2017/code.html"
+    },
+    {
+      "citation": "Ni, Z.-L. et al. (2026), GenVidBench, AAAI.",
+      "license_id": "CC-BY-NC-4.0",
+      "name": "GenVidBench",
+      "source_url": "https://github.com/genvidbench/GenVidBench"
+    }
+  ],
+  "auroc_grouped_bootstrap_95_percent": {
+    "confidence": 0.95,
+    "estimate": 0.7442129629629629,
+    "lower": 0.6137037024076148,
+    "successful_resamples": 500,
+    "upper": 0.8675057870370371
+  },
+  "claim_scope": "matched_research_baseline_not_production_assurance",
+  "clip_calibration": {
+    "intercept": 0.9732430681733114,
+    "method": "platt",
+    "slope": 1.4935703536563811
+  },
+  "configuration": {
+    "batch_size": 8,
+    "frame_count": 8,
+    "image_size": 32,
+    "seed": 20260818
+  },
+  "cross_generator_test": {
+    "auprc": 0.8909168653049131,
+    "auroc": 0.7442129629629629,
+    "balanced_accuracy": 0.7083333333333333,
+    "brier": 0.19676463977670836,
+    "count": 66,
+    "expected_calibration_error": 0.1919261964507034,
+    "f1": 0.7999999999999999,
+    "false_positive_rate_at_90_recall": 0.7777777777777778,
+    "log_loss": 0.5784554951560179,
+    "negatives": 18,
+    "positives": 48,
+    "precision": 0.8571428571428571,
+    "recall": 0.75,
+    "recall_at_1_percent_false_positive_rate": 0.3125,
+    "sensitivity": 0.75,
+    "specificity": 0.6666666666666666
+  },
+  "data_audit": {
+    "discovered": 410,
+    "duplicates_removed": 0,
+    "exclusions": 5,
+    "retained": 405,
+    "source_counts": {
+      "DAVIS-2017": 90,
+      "GenVidBench-Keling-I2V": 47,
+      "GenVidBench-Keling-T2V": 220,
+      "GenVidBench-Sora": 48
+    },
+    "split_counts": {
+      "test": 66,
+      "train": 270,
+      "validation": 69
+    }
+  },
+  "evaluation_limit": "The frozen image detector was trained on CIFAKE, while video labels come from DAVIS and GenVidBench. Clip calibration uses only the video validation split; source and content confounds remain.",
+  "image_checkpoint_sha256": "fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a",
+  "model_training": "frozen_image_detector_trained_from_scratch",
+  "threshold_selected_on_validation": 0.8113008269798305,
+  "timing": {
+    "audit_seconds": 3.2127777909999997,
+    "end_to_end_seconds": 248.819245166,
+    "generated_decode_inference_seconds": 101.31318099999999,
+    "generated_test_duration_seconds": 842.829332,
+    "seconds_per_input_minute": 7.212362727784134,
+    "test_decode_inference_seconds": 102.1085785,
+    "validation_decode_fit_seconds": 41.360930499999995
+  },
+  "video_training": false
+}

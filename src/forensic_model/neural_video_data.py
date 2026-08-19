@@ -91,16 +91,26 @@ def discover_video_benchmark(
     rows = []
     exclusions = 0
     rows.extend(_discover_davis(davis_root, seed))
-    keling, keling_exclusions = _discover_generated(
+    keling_t2v, keling_t2v_exclusions = _discover_generated(
         keling_root / "keling" / "T2V",
-        source="GenVidBench-Keling",
+        source="GenVidBench-Keling-T2V",
         family="keling",
         splits=("train", "validation"),
         seed=seed,
         excluded_names=KELING_EXCLUSIONS,
     )
-    rows.extend(keling)
-    exclusions += keling_exclusions
+    rows.extend(keling_t2v)
+    exclusions += keling_t2v_exclusions
+    keling_i2v, keling_i2v_exclusions = _discover_generated(
+        keling_root / "keling" / "I2V",
+        source="GenVidBench-Keling-I2V",
+        family="keling",
+        splits=("train", "validation"),
+        seed=seed,
+        excluded_names=frozenset(),
+    )
+    rows.extend(keling_i2v)
+    exclusions += keling_i2v_exclusions
     sora, sora_exclusions = _discover_generated(
         sora_root,
         source="GenVidBench-Sora",
@@ -115,7 +125,7 @@ def discover_video_benchmark(
         raise ValueError("video benchmark contains no examples")
 
     retained, duplicates = _deduplicate(rows)
-    by_split = {name: [] for name in ("train", "validation", "test")}
+    by_split: dict[str, list[VideoExample]] = {name: [] for name in ("train", "validation", "test")}
     for row in retained:
         by_split[row.split].append(row)
     for split, examples in by_split.items():
@@ -187,7 +197,7 @@ def _frame_example(path: Path, split: str, *, digest: str | None = None) -> Vide
 
 
 def _deduplicate(rows: Iterable[VideoExample]) -> tuple[list[VideoExample], int]:
-    retained = {}
+    retained: dict[str, VideoExample] = {}
     duplicates = 0
     for row in sorted(rows, key=lambda item: (item.content_group, item.path.as_posix())):
         previous = retained.get(row.content_group)

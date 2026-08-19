@@ -48,9 +48,8 @@ class VideoTensorDataset(Dataset[tuple[Tensor, int, str]]):
         cached = self._frame_cache.get(index)
         if cached is not None:
             return cached, example.label, example.content_group
-        images = _read_images(example)
-        chosen = uniform_indices(len(images), self.frame_count)
-        frames = torch.stack(tuple(self.transform(images[position]) for position in chosen))
+        images = _read_images(example, self.frame_count)
+        frames = torch.stack(tuple(self.transform(image) for image in images))
         if self.cache:
             self._frame_cache[index] = frames
         return frames, example.label, example.content_group
@@ -66,20 +65,21 @@ def uniform_indices(length: int, count: int) -> tuple[int, ...]:
     return tuple(round(step * (length - 1) / (count - 1)) for step in range(count))
 
 
-def _read_images(example: VideoExample) -> tuple[Image.Image, ...]:
+def _read_images(example: VideoExample, frame_count: int) -> tuple[Image.Image, ...]:
     try:
         if example.media_type == "frames":
-            images = tuple(_open_image(path) for path in sorted(example.path.glob("*.jpg")))
+            paths = sorted(example.path.glob("*.jpg"))
+            images = tuple(_open_image(paths[index]) for index in uniform_indices(len(paths), frame_count))
         elif example.media_type == "video":
-            images = _decode_video(example.path)
+            images = _decode_video(example.path, frame_count)
         else:
             raise VideoDecodeError(f"unsupported media type: {example.media_type}")
     except VideoDecodeError:
         raise
     except Exception as error:
         raise VideoDecodeError(f"failed to decode {example.path}: {type(error).__name__}") from error
-    if len(images) < 2:
-        raise VideoDecodeError(f"media contains fewer than two frames: {example.path}")
+    if len(images) != frame_count:
+        raise VideoDecodeError(f"media did not produce the requested frame count: {example.path}")
     return images
 
 
@@ -88,17 +88,32 @@ def _open_image(path: Path) -> Image.Image:
         return source.convert("RGB")
 
 
-def _decode_video(path: Path) -> tuple[Image.Image, ...]:
+def _decode_video(path: Path, frame_count: int) -> tuple[Image.Image, ...]:
     try:
         import av
     except ModuleNotFoundError as error:
         raise VideoDecodeError("video decoding requires the video extra") from error
 
-    images = []
     with av.open(str(path)) as container:
         streams = container.streams.video
         if not streams:
             raise VideoDecodeError(f"media contains no video stream: {path}")
-        for frame in container.decode(streams[0]):
-            images.append(frame.to_image().convert("RGB"))
-    return tuple(images)
+        stream = streams[0]
+        if stream.frames <= 0:
+            decoded = tuple(frame.to_image().convert("RGB") for frame in container.decode(stream))
+            return tuple(decoded[index] for index in uniform_indices(len(decoded), frame_count))
+        targets = uniform_indices(stream.frames, frame_count)
+        images = []
+        target_position = 0
+        for frame_index, frame in enumerate(container.decode(stream)):
+            if frame_index != targets[target_position]:
+                continue
+            image = frame.to_image().convert("RGB")
+            while target_position < len(targets) and targets[target_position] == frame_index:
+                images.append(image)
+                target_position += 1
+            if target_position == len(targets):
+                break
+    if not images:
+        raise VideoDecodeError(f"media contains no decoded frames: {path}")
+    return tuple(images + [images[-1]] * (frame_count - len(images)))

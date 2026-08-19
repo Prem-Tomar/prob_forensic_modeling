@@ -1,6 +1,6 @@
 # Real-video temporal baseline
 
-The first real-video experiment trains `temporal-residual-v1` from scratch on DAVIS 2017 real sequences and GenVidBench Keling generated clips. It evaluates once on held-out DAVIS sequences and the unseen Sora generator family. The checkpoint is local and ignored because both training datasets are CC BY-NC 4.0; it is a non-commercial research artifact.
+The real-video experiment trains `temporal-residual-v1` from scratch on DAVIS 2017 real sequences and both GenVidBench Keling text-to-video and image-to-video clips. It evaluates once on held-out DAVIS sequences and the unseen Sora generator family. The checkpoint is local and ignored because both training datasets are CC BY-NC 4.0; it is a non-commercial research artifact.
 
 ## Audited data
 
@@ -8,9 +8,10 @@ The first real-video experiment trains `temporal-residual-v1` from scratch on DA
 | --- | --- | ---: |
 | DAVIS 2017 | real train, validation, and test control | 90 |
 | GenVidBench Keling T2V | generated train and validation | 220 |
+| GenVidBench Keling I2V | generated train and validation | 47 |
 | GenVidBench Sora | unseen generated test | 48 |
 
-The content-hash audit retained 358 independent sources across 233 train, 59 validation, and 66 test examples. Five long composite or promotional files were excluded before splitting. No identical content crosses splits.
+The content-hash audit retained 405 independent sources across 270 train, 69 validation, and 66 test examples. Five long composite or promotional files were excluded before splitting. No identical content crosses splits. T2V and I2V increase generation-mode diversity, but both use the same Keling generator family; Sora remains the only unseen generator.
 
 Verified local archives:
 
@@ -22,15 +23,26 @@ Verified local archives:
 
 | Test slice | AUROC | Balanced accuracy | ECE |
 | --- | ---: | ---: | ---: |
-| Clean | 0.5752 | 0.4826 | 0.3480 |
-| JPEG quality 30 | 0.5764 | 0.4826 | 0.3465 |
-| Gaussian blur | 0.5787 | 0.4826 | 0.3336 |
-| 50% resize | 0.5752 | 0.4826 | 0.3492 |
-| Four-frame sparse sampling | 0.5729 | 0.5139 | 0.3469 |
+| Clean | 0.6273 | 0.6181 | 0.1691 |
+| JPEG quality 30 | 0.6262 | 0.6181 | 0.1686 |
+| Gaussian blur | 0.6273 | 0.6181 | 0.1692 |
+| 50% resize | 0.6262 | 0.6181 | 0.1690 |
+| Four-frame sparse sampling | 0.6377 | 0.6007 | 0.1610 |
 
-The clean grouped-bootstrap 95% interval is 0.3941–0.7315. Validation AUROC reached 0.9309, but unseen-generator AUROC fell to 0.5752. This gap is the main learning result: the compact model learned Keling/DAVIS distinctions that largely failed to transfer to Sora/DAVIS.
+The clean grouped-bootstrap 95% interval is 0.4641–0.7674. Validation AUROC reached 0.8480, while unseen-generator AUROC reached 0.6273. Relative to T2V-only training, adding I2V improved unseen AUROC by 0.0521 and reduced ECE by 0.1789. Mode diversity helps, but the broad interval and low operating-point recall still show weak Sora transfer.
 
-Temporal evidence had a larger mean absolute logit contribution (1.7834) than frame appearance (1.0525), but that does not make it reliable—the held-out metrics show that the temporal contribution itself did not generalize adequately.
+Frame appearance now has a larger mean absolute logit contribution (1.3133) than temporal evidence (0.8092). This reversal is consistent with reduced reliance on the brittle temporal component, but held-out ranking remains insufficient.
+
+## Matched frame-aggregation comparison
+
+The frozen CIFAKE image detector was applied to the same eight uniformly sampled frames per validation and test clip. Only clip-level calibration and threshold selection used the video validation split.
+
+| Model | Test AUROC | 95% grouped interval | Balanced accuracy | ECE |
+| --- | ---: | ---: | ---: | ---: |
+| Frozen image-frame mean | 0.7442 | 0.6137–0.8675 | 0.7083 | 0.1919 |
+| Temporal residual model | 0.6273 | 0.4641–0.7674 | 0.6181 | 0.1691 |
+
+The temporal model trails the simpler frame mean by 0.1169 AUROC. It therefore still fails the Phase 5 adoption gate, although the deficit is 0.0521 smaller than under T2V-only training. On the 842.83-second generated Sora subset, frozen-frame decoding and inference took 101.31 seconds (7.21 seconds per input minute); the temporal model took 101.16 seconds (7.20 seconds per input minute). Similar timings show that video decoding dominates both compact models in this CPU environment.
 
 ## Reproduction
 
@@ -45,8 +57,21 @@ PYTHONPATH=src python3 -m forensic_model.neural_video_experiment \
   --checkpoint artifacts/temporal-residual-v1.pt
 ```
 
-The committed report SHA-256 is `2351bdd74eefbd9f59f484f8589e3d1c567a92eae85907876c8e07413182e972`. The ignored checkpoint SHA-256 is `aa26276ee1901f0ddb6929b407f1b089e59b09f8f0ef10c21c5aaeb51b675e9e`.
+The committed report SHA-256 is `ce5885f6dec0a66996e30ff9a276531ef6453f76d0cc34741686456ecb529566`. The ignored checkpoint SHA-256 is `c2f33b9f80c5b29b334d98ee6a63faeccfb5e736459bee089d8079ef3fd71eb3`.
+
+Reproduce the matched frame baseline with:
+
+```bash
+PYTHONPATH=src python3 -m forensic_model.neural_video_baseline_experiment \
+  --davis-root data/raw/davis2017/DAVIS \
+  --keling-root data/raw/genvidbench/Keling \
+  --sora-root data/raw/genvidbench/OpenAI_Sora \
+  --image-checkpoint artifacts/spatial-frequency-v1.pt \
+  --output reports/frame-aggregation-evaluation.json
+```
+
+The frame-aggregation report SHA-256 is `2b80964abcfc5205ff0fe52da8aa748d3dd2800b4d0dad7b92019bd0c4dda7e8` and its frozen image checkpoint SHA-256 is `fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a`.
 
 ## Limits and next experiment
 
-Real and generated labels still come from different collections, codecs, durations, and content distributions. The result is diagnostic, not production assurance or generator attribution. The next experiment must add matched real/generated content controls, multiple training generators, a frame-aggregation baseline using the frozen image detector, and measured decode/inference latency. The temporal model must beat that matched baseline before the Phase 5 exit gate can close.
+Real and generated labels still come from different collections, codecs, durations, and content distributions. The result is diagnostic, not production assurance or generator attribution. The local corpus has only one training generator family despite its two modes. The next temporal experiment therefore still requires matched real/generated content controls and at least one additional training generator, then must beat the frozen frame-aggregation baseline before the Phase 5 exit gate can close.

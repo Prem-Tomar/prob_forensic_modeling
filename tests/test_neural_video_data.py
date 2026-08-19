@@ -17,6 +17,8 @@ class VideoManifestTests(unittest.TestCase):
         self.assertEqual(first, repeated)
         self.assertEqual(first.audit.exclusions, 3)
         self.assertEqual(first.audit.duplicates_removed, 0)
+        self.assertIn("GenVidBench-Keling-T2V", first.audit.source_counts)
+        self.assertIn("GenVidBench-Keling-I2V", first.audit.source_counts)
         for examples in (first.train, first.validation, first.test):
             self.assertEqual({example.label for example in examples}, {0, 1})
         groups = [example.content_group for example in first.train + first.validation + first.test]
@@ -27,7 +29,7 @@ class VideoManifestTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             davis, keling, sora = self._fixtures(root)
-            training_video = next((keling / "keling" / "T2V").glob("*.mp4"))
+            training_video = next((keling / "keling" / "I2V").glob("*.mp4"))
             (sora / "duplicate.mp4").write_bytes(training_video.read_bytes())
 
             with self.assertRaisesRegex(ValueError, "crosses dataset splits"):
@@ -53,6 +55,10 @@ class VideoManifestTests(unittest.TestCase):
             (videos / f"generated-{index}.mp4").write_bytes(f"keling-{index}".encode())
         for name in ("39462_1717765170_raw.mp4", "WeChat_20240608171016.mp4"):
             (videos / name).write_bytes(name.encode())
+        image_videos = root / "Keling" / "keling" / "I2V"
+        image_videos.mkdir(parents=True)
+        for index in range(12):
+            (image_videos / f"image-generated-{index}.mp4").write_bytes(f"keling-i2v-{index}".encode())
 
         sora = root / "Sora"
         sora.mkdir()

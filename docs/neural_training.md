@@ -4,7 +4,11 @@ The optional neural track uses `SpatialFrequencyDetector`, a compact two-branch 
 
 `discover_cifake` hashes all 120,000 source files, reports perceptual collisions, removes exact duplicates, and assigns new deterministic train, validation, and test splits. This is necessary because the downloaded CIFAKE release contains exact duplicates across its published train and test folders. The split seed is part of the experiment configuration.
 
-`train_neural_detector` initializes every parameter from the recorded seed. It never downloads or loads pretrained weights. Optimization uses only the training split; probability calibration and the decision threshold use only validation scores; test and generator-holdout samples remain untouched until evaluation.
+`train_neural_detector` initializes every parameter from the recorded seed. It never downloads or loads pretrained weights. Optimization uses only the training split. The real-image experiment compares fixed spatial/frequency blends across clean, JPEG, blur, and resize validation slices, chooses the blend with the strongest worst-case ranking, then refits probability calibration and the decision threshold on clean validation scores. Test and generator-holdout samples remain untouched until every choice is fixed.
+
+The checkpoint retains both learned branches and records the selected frequency weight. This keeps the training ablation inspectable while ensuring library inference, explanations, and the video frame baseline use the same deployed blend.
+
+`CalibratedNeuralImageDetector` is the reusable checkpoint boundary. It accepts local files or preprocessed tensor batches and returns a calibrated decision, abstention state, threshold, confidence, and both raw and deployed branch contributions. It does not download weights or media.
 
 The neural extra is intentionally optional:
 

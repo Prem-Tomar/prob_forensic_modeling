@@ -2,17 +2,19 @@
 
 from __future__ import annotations
 
+import hashlib
 import io
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Sequence
 
-from PIL import Image, ImageFilter
+from PIL import Image, ImageEnhance, ImageFilter
 from torch import Tensor
 from torch.utils.data import Dataset
 from torchvision import transforms
 
-from forensic_model.data_audit import AuditSummary, CandidateSample, PartitionedSample, partition_candidates, sha256_file
+from forensic_model.cifake import discover_cifake_candidates
+from forensic_model.data_audit import AuditSummary, PartitionedSample, partition_candidates, sha256_file
 
 
 @dataclass(frozen=True)
@@ -39,6 +41,20 @@ class ImageDatasetBundle:
     test: tuple[ImageExample, ...]
     audit: AuditSummary
     attributions: tuple[DatasetAttribution, ...]
+
+
+def image_split_digest(bundle: ImageDatasetBundle) -> str:
+    """Hash labels and content identities in every frozen split without paths."""
+
+    digest = hashlib.sha256()
+    for split, examples in (
+        ("train", bundle.train),
+        ("validation", bundle.validation),
+        ("test", bundle.test),
+    ):
+        for example in sorted(examples, key=lambda row: (row.content_group, row.label)):
+            digest.update(f"{split}\0{example.content_group}\0{example.label}\n".encode("utf-8"))
+    return digest.hexdigest()
 
 
 CIFAKE_ATTRIBUTIONS = (
@@ -82,19 +98,7 @@ class PillowImageDataset(Dataset[tuple[Tensor, int, str]]):
 def discover_cifake(root: Path, *, seed: str = "cifake-split-v1") -> ImageDatasetBundle:
     """Audit every CIFAKE image and replace its leaky published split."""
 
-    candidates = []
-    for path in sorted(root.glob("*/*/*.jpg")):
-        relative = path.relative_to(root).as_posix()
-        label = "synthetic" if path.parent.name.casefold() == "fake" else "camera_or_human"
-        candidates.append(
-            CandidateSample(
-                sample_id=relative,
-                path=path,
-                label=label,
-                sha256=sha256_file(path),
-                perceptual_hash=_difference_hash(path),
-            )
-        )
+    candidates = discover_cifake_candidates(root)
     partitioned, audit = partition_candidates(candidates, seed=seed)
     splits: dict[str, list[ImageExample]] = {"train": [], "validation": [], "test": []}
     for row in partitioned:
@@ -111,8 +115,11 @@ def discover_cifake(root: Path, *, seed: str = "cifake-split-v1") -> ImageDatase
 def discover_synthscars_test(root: Path) -> tuple[ImageExample, ...]:
     """Load the held-out synthetic images without using its training split."""
 
+    image_root = root / "test" / "images"
+    if not image_root.is_dir():
+        image_root = root / "SynthScars" / "test" / "images"
     examples = []
-    for path in sorted((root / "test" / "images").glob("*")):
+    for path in sorted(image_root.glob("*")):
         if path.is_file():
             digest = sha256_file(path)
             examples.append(ImageExample(path, 1, digest, "SynthScars", "unseen_mixed"))
@@ -135,10 +142,26 @@ def training_transform(image_size: int = 32) -> Callable[[Image.Image], Tensor]:
     )
 
 
+IMAGE_STRESS_OPERATIONS = (
+    "clean",
+    "jpeg30",
+    "webp30",
+    "resize50",
+    "crop80",
+    "blur1",
+    "sharpen2",
+    "noise02",
+    "gamma08",
+    "color70",
+    "screenshot",
+    "metadata_strip",
+)
+
+
 def evaluation_transform(image_size: int = 32, *, operation: str = "clean") -> Callable[[Image.Image], Tensor]:
     if image_size < 8:
         raise ValueError("image_size must be at least 8")
-    if operation not in {"clean", "jpeg30", "blur1", "resize50"}:
+    if operation not in IMAGE_STRESS_OPERATIONS:
         raise ValueError(f"unsupported post-processing operation: {operation}")
     return transforms.Compose(
         (
@@ -155,28 +178,59 @@ class _Postprocess:
         self.operation = operation
 
     def __call__(self, image: Image.Image) -> Image.Image:
+        image = image.convert("RGB")
         if self.operation == "clean":
             return image
         if self.operation == "jpeg30":
-            buffer = io.BytesIO()
-            image.save(buffer, "JPEG", quality=30)
-            buffer.seek(0)
-            with Image.open(buffer) as decoded:
-                return decoded.convert("RGB")
+            return _codec_round_trip(image, "JPEG", quality=30)
+        if self.operation == "webp30":
+            return _codec_round_trip(image, "WEBP", quality=30, method=6)
         if self.operation == "blur1":
             return image.filter(ImageFilter.GaussianBlur(1.0))
-        half_size = (max(1, image.width // 2), max(1, image.height // 2))
-        return image.resize(half_size, Image.Resampling.BILINEAR).resize(image.size, Image.Resampling.BILINEAR)
+        if self.operation == "resize50":
+            half_size = (max(1, image.width // 2), max(1, image.height // 2))
+            return image.resize(half_size, Image.Resampling.BILINEAR).resize(image.size, Image.Resampling.BILINEAR)
+        if self.operation == "crop80":
+            margin_x = image.width // 10
+            margin_y = image.height // 10
+            cropped = image.crop((margin_x, margin_y, image.width - margin_x, image.height - margin_y))
+            return cropped.resize(image.size, Image.Resampling.BICUBIC)
+        if self.operation == "sharpen2":
+            return ImageEnhance.Sharpness(image).enhance(2.0)
+        if self.operation == "noise02":
+            return _deterministic_noise(image, amplitude=0.02)
+        if self.operation == "gamma08":
+            lookup = [round(255.0 * ((value / 255.0) ** 0.8)) for value in range(256)]
+            return image.point(lookup * 3)
+        if self.operation == "color70":
+            return ImageEnhance.Color(image).enhance(0.7)
+        if self.operation == "screenshot":
+            inner_size = (max(1, round(image.width * 0.88)), max(1, round(image.height * 0.88)))
+            inner = image.resize(inner_size, Image.Resampling.BICUBIC)
+            canvas = Image.new("RGB", image.size, (238, 238, 238))
+            canvas.paste(inner, ((image.width - inner.width) // 2, (image.height - inner.height) // 2))
+            return _codec_round_trip(canvas, "JPEG", quality=85)
+        if self.operation == "metadata_strip":
+            return _codec_round_trip(image, "PNG", optimize=False)
+        raise ValueError(f"unsupported post-processing operation: {self.operation}")
 
 
-def _difference_hash(path: Path) -> str:
-    with Image.open(path) as source:
-        values = list(source.convert("L").resize((9, 8), Image.Resampling.BILINEAR).getdata())
-    bits = 0
-    for row in range(8):
-        for column in range(8):
-            bits = (bits << 1) | (values[row * 9 + column] > values[row * 9 + column + 1])
-    return f"{bits:016x}"
+def _codec_round_trip(image: Image.Image, format_name: str, **options: int | bool) -> Image.Image:
+    buffer = io.BytesIO()
+    image.save(buffer, format_name, **options)
+    buffer.seek(0)
+    with Image.open(buffer) as decoded:
+        return decoded.convert("RGB").copy()
+
+
+def _deterministic_noise(image: Image.Image, *, amplitude: float) -> Image.Image:
+    maximum_delta = round(255 * amplitude)
+    pixels = bytearray(image.tobytes())
+    for index, value in enumerate(pixels):
+        pseudo_random = ((index * 73 + index // 3 * 151 + 19) % 255) - 127
+        delta = round(maximum_delta * pseudo_random / 127)
+        pixels[index] = min(255, max(0, value + delta))
+    return Image.frombytes("RGB", image.size, bytes(pixels))
 
 
 def _cifake_example(row: PartitionedSample) -> ImageExample:

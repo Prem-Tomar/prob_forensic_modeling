@@ -16,14 +16,14 @@ import torchvision
 from torch.utils.data import DataLoader
 
 from forensic_model.metrics import auroc, binary_metrics, grouped_bootstrap_interval
-from forensic_model.neural import NeuralConfig, save_neural_checkpoint
+from forensic_model.neural import save_neural_checkpoint
 from forensic_model.neural_data import (
     SYNTHSCARS_ATTRIBUTION,
-    ImageExample,
     PillowImageDataset,
     discover_cifake,
     discover_synthscars_test,
     evaluation_transform,
+    image_split_digest,
     training_transform,
 )
 from forensic_model.neural_training import (
@@ -92,7 +92,11 @@ def run_real_image_experiment(
     unseen_probabilities, unseen_labels, _ = _calibrated_scores(detector, unseen_dataset)
     unseen_metrics = binary_metrics(unseen_labels, unseen_probabilities, threshold=detector.threshold)
 
-    explanations = _branch_summary(detector.model, PillowImageDataset(bundle.test[:256], evaluation_transform()))
+    explanations = _branch_summary(
+        detector.model,
+        PillowImageDataset(bundle.test[:256], evaluation_transform()),
+        frequency_weight=detector.frequency_weight,
+    )
     metadata = detector.metadata()
     metadata.update({"dataset": "CIFAKE", "split_seed": "cifake-split-v1"})
     save_neural_checkpoint(checkpoint, detector.model, metadata=metadata)
@@ -115,6 +119,7 @@ def run_real_image_experiment(
             "checkpoint_sha256": _sha256(checkpoint),
         },
         "data_audit": asdict(bundle.audit),
+        "split_membership_sha256": image_split_digest(bundle),
         "attribution": [asdict(item) for item in bundle.attributions + (SYNTHSCARS_ATTRIBUTION,)],
         "training_history": [
             {
@@ -179,7 +184,12 @@ def _calibrated_scores(
 
 
 @torch.inference_mode()
-def _branch_summary(model: torch.nn.Module, dataset: PillowImageDataset) -> dict[str, float]:
+def _branch_summary(
+    model: torch.nn.Module,
+    dataset: PillowImageDataset,
+    *,
+    frequency_weight: float,
+) -> dict[str, float]:
     loader = DataLoader(dataset, batch_size=256, shuffle=False, num_workers=0)
     spatial = []
     frequency = []
@@ -188,12 +198,18 @@ def _branch_summary(model: torch.nn.Module, dataset: PillowImageDataset) -> dict
         evidence = model.forward_evidence(images)
         spatial.extend(evidence.spatial_contribution.tolist())
         frequency.extend(evidence.frequency_contribution.tolist())
+    deployed_frequency = [frequency_weight * value for value in frequency]
     return {
         "sample_count": len(spatial),
+        "selected_frequency_weight": frequency_weight,
         "mean_spatial_contribution": sum(spatial) / len(spatial),
         "mean_frequency_contribution": sum(frequency) / len(frequency),
+        "mean_deployed_frequency_contribution": sum(deployed_frequency) / len(deployed_frequency),
         "mean_absolute_spatial_contribution": sum(abs(value) for value in spatial) / len(spatial),
         "mean_absolute_frequency_contribution": sum(abs(value) for value in frequency) / len(frequency),
+        "mean_absolute_deployed_frequency_contribution": (
+            sum(abs(value) for value in deployed_frequency) / len(deployed_frequency)
+        ),
     }
 
 

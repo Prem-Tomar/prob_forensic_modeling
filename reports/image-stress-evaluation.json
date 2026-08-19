@@ -1,0 +1,881 @@
+{
+  "claim_scope": "frozen_matched_postprocessing_stress_test_not_production_assurance",
+  "configuration": {
+    "batch_size": 512,
+    "bootstrap_confidence": 0.95,
+    "bootstrap_resamples": 200,
+    "cpu_threads": 8,
+    "seed": 20260818
+  },
+  "data_audit": {
+    "exact_duplicate_groups": 1336,
+    "exact_duplicates_removed": 1336,
+    "input_samples": 120000,
+    "perceptual_collision_groups": 18,
+    "retained_samples": 118664,
+    "split_counts": {
+      "test": 17876,
+      "train": 83037,
+      "validation": 17751
+    }
+  },
+  "environment": {
+    "device": "cpu",
+    "pillow": "11.3.0",
+    "python": "3.9.6",
+    "torch": "2.7.1",
+    "torchvision": "0.22.1"
+  },
+  "limitations": [
+    "All rows come from the single CIFAKE generator family and are not evidence of cross-generator generalization.",
+    "Transforms are deterministic reference implementations, not an exhaustive editor or platform matrix.",
+    "The same frozen thresholds and calibrators are used throughout; no stress-slice tuning is performed."
+  ],
+  "models": {
+    "feature": {
+      "architecture": "standardized_logistic_regression",
+      "artifact_sha256": "ae61add3c91fe085f2a460c976e1f5a0ec2fe510260dd941c3e519ae880466e6",
+      "threshold": 0.5098172183506002
+    },
+    "neural": {
+      "architecture": "spatial-frequency-v1",
+      "checkpoint_sha256": "fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a",
+      "frequency_weight": 0.0,
+      "threshold": 0.4824801873225914
+    }
+  },
+  "operation_order": [
+    "clean",
+    "jpeg30",
+    "webp30",
+    "resize50",
+    "crop80",
+    "blur1",
+    "sharpen2",
+    "noise02",
+    "gamma08",
+    "color70",
+    "screenshot",
+    "metadata_strip"
+  ],
+  "sample_count_per_slice": 17876,
+  "slices": {
+    "blur1": {
+      "description": "Gaussian blur with radius 1.0",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7011811103705522,
+          "lower": 0.6933653323553397,
+          "successful_resamples": 200,
+          "upper": 0.7089496702143515
+        },
+        "metrics": {
+          "auprc": 0.7122930357538698,
+          "auroc": 0.7011811103705522,
+          "balanced_accuracy": 0.5083705926794327,
+          "brier": 0.3302101110211839,
+          "count": 17876,
+          "expected_calibration_error": 0.32737459020530213,
+          "f1": 0.03925438596491228,
+          "false_positive_rate_at_90_recall": 0.7808142777467931,
+          "log_loss": 0.9446143150294736,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.8564593301435407,
+          "recall": 0.020087532263494558,
+          "recall_at_1_percent_false_positive_rate": 0.07664684098305465,
+          "sensitivity": 0.020087532263494558,
+          "specificity": 0.9966536530953709
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.8610336275310684,
+          "mean_absolute": 0.32764953689538995,
+          "mean_signed": -0.32764246418653736
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8220428225502949,
+          "lower": 0.8167513799439887,
+          "successful_resamples": 200,
+          "upper": 0.8285636126904814
+        },
+        "metrics": {
+          "auprc": 0.8186173740653813,
+          "auroc": 0.8220428225502949,
+          "balanced_accuracy": 0.7370458615259795,
+          "brier": 0.17580022450997532,
+          "count": 17876,
+          "expected_calibration_error": 0.04626709584398635,
+          "f1": 0.7179825878114681,
+          "false_positive_rate_at_90_recall": 0.4913552704963748,
+          "log_loss": 0.5221146246600262,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7720816115702479,
+          "recall": 0.6709684659409718,
+          "recall_at_1_percent_false_positive_rate": 0.17293233082706766,
+          "sensitivity": 0.6709684659409718,
+          "specificity": 0.8031232571109872
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.30759979126791726,
+          "mean_absolute": 0.04759316393956027,
+          "mean_signed": -0.04617319838759224
+        }
+      },
+      "neural_minus_feature_auroc": 0.12086171217974273
+    },
+    "clean": {
+      "description": "decode only",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7803772110183226,
+          "lower": 0.7738353231611422,
+          "successful_resamples": 200,
+          "upper": 0.7865298131708871
+        },
+        "metrics": {
+          "auprc": 0.7929756534298532,
+          "auroc": 0.7803772110183226,
+          "balanced_accuracy": 0.7117454485620116,
+          "brier": 0.19028291557137528,
+          "count": 17876,
+          "expected_calibration_error": 0.024349210162077806,
+          "f1": 0.7010273376284172,
+          "false_positive_rate_at_90_recall": 0.6294478527607362,
+          "log_loss": 0.5600954660078277,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7260158691993268,
+          "recall": 0.6777017169790147,
+          "recall_at_1_percent_false_positive_rate": 0.15508921557625407,
+          "sensitivity": 0.6777017169790147,
+          "specificity": 0.7457891801450084
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.0,
+          "mean_absolute": 0.0,
+          "mean_signed": 0.0
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8244449433428658,
+          "lower": 0.8186256527634482,
+          "successful_resamples": 200,
+          "upper": 0.8297985873890029
+        },
+        "metrics": {
+          "auprc": 0.821524376426449,
+          "auroc": 0.8244449433428658,
+          "balanced_accuracy": 0.7446802341028338,
+          "brier": 0.17178439179098892,
+          "count": 17876,
+          "expected_calibration_error": 0.02484041428958248,
+          "f1": 0.7482768127929419,
+          "false_positive_rate_at_90_recall": 0.48957055214723927,
+          "log_loss": 0.5136760797785572,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7355810928013877,
+          "recall": 0.7614184715520144,
+          "recall_at_1_percent_false_positive_rate": 0.18011446526764674,
+          "sensitivity": 0.7614184715520144,
+          "specificity": 0.7279419966536531
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.0,
+          "mean_absolute": 0.0,
+          "mean_signed": 0.0
+        }
+      },
+      "neural_minus_feature_auroc": 0.044067732324543196
+    },
+    "color70": {
+      "description": "color saturation factor 0.7",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7799637025320041,
+          "lower": 0.7723799190369742,
+          "successful_resamples": 200,
+          "upper": 0.787484174858125
+        },
+        "metrics": {
+          "auprc": 0.7921911549751742,
+          "auroc": 0.7799637025320041,
+          "balanced_accuracy": 0.7046518953651036,
+          "brier": 0.191554991541973,
+          "count": 17876,
+          "expected_calibration_error": 0.03698851891870208,
+          "f1": 0.6697557921102066,
+          "false_positive_rate_at_90_recall": 0.618851087562744,
+          "log_loss": 0.5632974631795663,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.757614392973509,
+          "recall": 0.6001571091908877,
+          "recall_at_1_percent_false_positive_rate": 0.15755807429020313,
+          "sensitivity": 0.6001571091908877,
+          "specificity": 0.8091466815393196
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.38566285700593667,
+          "mean_absolute": 0.04139438852369743,
+          "mean_signed": -0.037256392899936173
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8090128864961514,
+          "lower": 0.8023478966957719,
+          "successful_resamples": 200,
+          "upper": 0.8151420829257079
+        },
+        "metrics": {
+          "auprc": 0.7997380291340884,
+          "auroc": 0.8090128864961514,
+          "balanced_accuracy": 0.72937393595951,
+          "brier": 0.18219451835334302,
+          "count": 17876,
+          "expected_calibration_error": 0.05300509996910747,
+          "f1": 0.7145640238502863,
+          "false_positive_rate_at_90_recall": 0.5039598438371444,
+          "log_loss": 0.5391459737562655,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7538614848031888,
+          "recall": 0.6791605880372573,
+          "recall_at_1_percent_false_positive_rate": 0.12804399057344854,
+          "sensitivity": 0.6791605880372573,
+          "specificity": 0.7795872838817625
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.6138102599678548,
+          "mean_absolute": 0.060548784368247364,
+          "mean_signed": -0.04695244215095724
+        }
+      },
+      "neural_minus_feature_auroc": 0.02904918396414735
+    },
+    "crop80": {
+      "description": "center crop retaining 80 percent per axis followed by bicubic resize",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7594795481098547,
+          "lower": 0.7534479056184602,
+          "successful_resamples": 200,
+          "upper": 0.7656233876564336
+        },
+        "metrics": {
+          "auprc": 0.7805268546000531,
+          "auroc": 0.7594795481098547,
+          "balanced_accuracy": 0.6390497328636789,
+          "brier": 0.22899865774669073,
+          "count": 17876,
+          "expected_calibration_error": 0.17445112473273636,
+          "f1": 0.46813786263327556,
+          "false_positive_rate_at_90_recall": 0.6909090909090909,
+          "log_loss": 0.6606801196539311,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.8883312421580929,
+          "recall": 0.3178094489956234,
+          "recall_at_1_percent_false_positive_rate": 0.1664235214902929,
+          "sensitivity": 0.3178094489956234,
+          "specificity": 0.9602900167317345
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.6414149130814452,
+          "mean_absolute": 0.17565531002293405,
+          "mean_signed": -0.17471899871397045
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7953585568836726,
+          "lower": 0.7883157760425242,
+          "successful_resamples": 200,
+          "upper": 0.800526526100528
+        },
+        "metrics": {
+          "auprc": 0.7966338711264315,
+          "auroc": 0.7953585568836726,
+          "balanced_accuracy": 0.7168484429560387,
+          "brier": 0.1843898239007632,
+          "count": 17876,
+          "expected_calibration_error": 0.010607254956409481,
+          "f1": 0.7182142061901582,
+          "false_positive_rate_at_90_recall": 0.5666480758505298,
+          "log_loss": 0.5447521576587362,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7125814647078317,
+          "recall": 0.7239367074402424,
+          "recall_at_1_percent_false_positive_rate": 0.15385478621927953,
+          "sensitivity": 0.7239367074402424,
+          "specificity": 0.7097601784718349
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.8969493882980194,
+          "mean_absolute": 0.09203525862742118,
+          "mean_signed": -0.002764617429060547
+        }
+      },
+      "neural_minus_feature_auroc": 0.03587900877381789
+    },
+    "gamma08": {
+      "description": "per-channel gamma exponent 0.8",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7849557966888653,
+          "lower": 0.7777929321246414,
+          "successful_resamples": 200,
+          "upper": 0.7922432231561352
+        },
+        "metrics": {
+          "auprc": 0.7982504336121197,
+          "auroc": 0.7849557966888653,
+          "balanced_accuracy": 0.7088787785114032,
+          "brier": 0.19154492230991468,
+          "count": 17876,
+          "expected_calibration_error": 0.06039609311166988,
+          "f1": 0.6645581875685793,
+          "false_positive_rate_at_90_recall": 0.6097044060234245,
+          "log_loss": 0.5640449263913067,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7821330902461258,
+          "recall": 0.5777129390640781,
+          "recall_at_1_percent_false_positive_rate": 0.1659746380877567,
+          "sensitivity": 0.5777129390640781,
+          "specificity": 0.8400446179587284
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.2495349064860109,
+          "mean_absolute": 0.06244938191674199,
+          "mean_signed": -0.06066396709290402
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8067409744362405,
+          "lower": 0.8006802937622485,
+          "successful_resamples": 200,
+          "upper": 0.8126252341917197
+        },
+        "metrics": {
+          "auprc": 0.8034892052980379,
+          "auroc": 0.8067409744362405,
+          "balanced_accuracy": 0.7113767032393146,
+          "brier": 0.1878148192151056,
+          "count": 17876,
+          "expected_calibration_error": 0.08536392095464525,
+          "f1": 0.6719714813164428,
+          "false_positive_rate_at_90_recall": 0.5173452314556609,
+          "log_loss": 0.5509612489385949,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7764048249485143,
+          "recall": 0.5923016496465043,
+          "recall_at_1_percent_false_positive_rate": 0.16002693300415216,
+          "sensitivity": 0.5923016496465043,
+          "specificity": 0.8304517568321249
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.45936101783201894,
+          "mean_absolute": 0.10035799737480222,
+          "mean_signed": -0.08884677726519796
+        }
+      },
+      "neural_minus_feature_auroc": 0.021785177747375206
+    },
+    "jpeg30": {
+      "description": "JPEG recompression at quality 30",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7807838723428678,
+          "lower": 0.7732099380600886,
+          "successful_resamples": 200,
+          "upper": 0.7865866804240785
+        },
+        "metrics": {
+          "auprc": 0.7922796089939229,
+          "auroc": 0.7807838723428678,
+          "balanced_accuracy": 0.7139303878979733,
+          "brier": 0.19037096292264089,
+          "count": 17876,
+          "expected_calibration_error": 0.02870148440080308,
+          "f1": 0.6919088387796938,
+          "false_positive_rate_at_90_recall": 0.6275515895147797,
+          "log_loss": 0.5614847396511728,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7476221498371336,
+          "recall": 0.6439232409381663,
+          "recall_at_1_percent_false_positive_rate": 0.1528447985635731,
+          "sensitivity": 0.6439232409381663,
+          "specificity": 0.7839375348577803
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.4814386266110745,
+          "mean_absolute": 0.05424897525691178,
+          "mean_signed": -0.020049244127529613
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8192793230798233,
+          "lower": 0.8131251671071227,
+          "successful_resamples": 200,
+          "upper": 0.8261468732044845
+        },
+        "metrics": {
+          "auprc": 0.816612893211642,
+          "auroc": 0.8192793230798233,
+          "balanced_accuracy": 0.7405872148468499,
+          "brier": 0.17408574608702804,
+          "count": 17876,
+          "expected_calibration_error": 0.02191469125623089,
+          "f1": 0.7434734513274338,
+          "false_positive_rate_at_90_recall": 0.4978248745119911,
+          "log_loss": 0.5188235638480819,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7330134147671502,
+          "recall": 0.7542363371114353,
+          "recall_at_1_percent_false_positive_rate": 0.17158568061945909,
+          "sensitivity": 0.7542363371114353,
+          "specificity": 0.7269380925822644
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.28286156822472586,
+          "mean_absolute": 0.019550123875476014,
+          "mean_signed": -0.0014791576444594069
+        }
+      },
+      "neural_minus_feature_auroc": 0.03849545073695548
+    },
+    "metadata_strip": {
+      "description": "lossless PNG pixel round trip without source metadata",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7803772110183226,
+          "lower": 0.7741317099624716,
+          "successful_resamples": 200,
+          "upper": 0.7871494855010006
+        },
+        "metrics": {
+          "auprc": 0.7929756534298532,
+          "auroc": 0.7803772110183226,
+          "balanced_accuracy": 0.7117454485620116,
+          "brier": 0.19028291557137528,
+          "count": 17876,
+          "expected_calibration_error": 0.024349210162077806,
+          "f1": 0.7010273376284172,
+          "false_positive_rate_at_90_recall": 0.6294478527607362,
+          "log_loss": 0.5600954660078277,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7260158691993268,
+          "recall": 0.6777017169790147,
+          "recall_at_1_percent_false_positive_rate": 0.15508921557625407,
+          "sensitivity": 0.6777017169790147,
+          "specificity": 0.7457891801450084
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.0,
+          "mean_absolute": 0.0,
+          "mean_signed": 0.0
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8244449433428658,
+          "lower": 0.819479033377365,
+          "successful_resamples": 200,
+          "upper": 0.8303648172424629
+        },
+        "metrics": {
+          "auprc": 0.821524376426449,
+          "auroc": 0.8244449433428658,
+          "balanced_accuracy": 0.7446802341028338,
+          "brier": 0.17178439179098892,
+          "count": 17876,
+          "expected_calibration_error": 0.02484041428958248,
+          "f1": 0.7482768127929419,
+          "false_positive_rate_at_90_recall": 0.48957055214723927,
+          "log_loss": 0.5136760797785572,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7355810928013877,
+          "recall": 0.7614184715520144,
+          "recall_at_1_percent_false_positive_rate": 0.18011446526764674,
+          "sensitivity": 0.7614184715520144,
+          "specificity": 0.7279419966536531
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.0,
+          "mean_absolute": 0.0,
+          "mean_signed": 0.0
+        }
+      },
+      "neural_minus_feature_auroc": 0.044067732324543196
+    },
+    "noise02": {
+      "description": "deterministic additive RGB noise with maximum amplitude 0.02",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7854744159931173,
+          "lower": 0.7799045735448829,
+          "successful_resamples": 200,
+          "upper": 0.792100367665908
+        },
+        "metrics": {
+          "auprc": 0.7984135671206947,
+          "auroc": 0.7854744159931173,
+          "balanced_accuracy": 0.712744270462139,
+          "brier": 0.18888296700672966,
+          "count": 17876,
+          "expected_calibration_error": 0.03404178194212521,
+          "f1": 0.7122120719609931,
+          "false_positive_rate_at_90_recall": 0.6174010039040714,
+          "log_loss": 0.5562299695876405,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7113748320644873,
+          "recall": 0.7130512849287398,
+          "recall_at_1_percent_false_positive_rate": 0.16788239254853551,
+          "sensitivity": 0.7130512849287398,
+          "specificity": 0.7124372559955382
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.46637909502259667,
+          "mean_absolute": 0.024868137894043532,
+          "mean_signed": 0.02104138404148865
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8242286130873546,
+          "lower": 0.8183567245295045,
+          "successful_resamples": 200,
+          "upper": 0.828997105801925
+        },
+        "metrics": {
+          "auprc": 0.8212585832279755,
+          "auroc": 0.8242286130873546,
+          "balanced_accuracy": 0.7444581582399115,
+          "brier": 0.17188921608016658,
+          "count": 17876,
+          "expected_calibration_error": 0.024640087027042814,
+          "f1": 0.7481950950675116,
+          "false_positive_rate_at_90_recall": 0.4899051868377022,
+          "log_loss": 0.5139376581416624,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7351093783842322,
+          "recall": 0.7617551341039165,
+          "recall_at_1_percent_false_positive_rate": 0.18247110313096174,
+          "sensitivity": 0.7617551341039165,
+          "specificity": 0.7271611823759063
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.012201794573923563,
+          "mean_absolute": 0.0012439878101167974,
+          "mean_signed": 0.0005875410054338814
+        }
+      },
+      "neural_minus_feature_auroc": 0.03875419709423733
+    },
+    "resize50": {
+      "description": "bilinear 50 percent downscale followed by upscale",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.6866871334632625,
+          "lower": 0.6786182320558111,
+          "successful_resamples": 200,
+          "upper": 0.6942632930412531
+        },
+        "metrics": {
+          "auprc": 0.6950830329042897,
+          "auroc": 0.6866871334632625,
+          "balanced_accuracy": 0.5040487380223957,
+          "brier": 0.34766772494168585,
+          "count": 17876,
+          "expected_calibration_error": 0.3470581712922491,
+          "f1": 0.021693414499169894,
+          "false_positive_rate_at_90_recall": 0.7892916899051868,
+          "log_loss": 1.0057733877912103,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7903225806451613,
+          "recall": 0.010997643362136685,
+          "recall_at_1_percent_false_positive_rate": 0.06677140612725845,
+          "sensitivity": 0.010997643362136685,
+          "specificity": 0.9970998326826548
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.8806019010757059,
+          "mean_absolute": 0.34737021162677123,
+          "mean_signed": -0.34732604527348604
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8187479670532601,
+          "lower": 0.81299187212669,
+          "successful_resamples": 200,
+          "upper": 0.8242845897244035
+        },
+        "metrics": {
+          "auprc": 0.8154766979403026,
+          "auroc": 0.8187479670532601,
+          "balanced_accuracy": 0.7270166409188765,
+          "brier": 0.18029187200882058,
+          "count": 17876,
+          "expected_calibration_error": 0.065572086736948,
+          "f1": 0.6934591194968553,
+          "false_positive_rate_at_90_recall": 0.49648633575013945,
+          "log_loss": 0.5321372762023054,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7888109886965231,
+          "recall": 0.6186735495455056,
+          "recall_at_1_percent_false_positive_rate": 0.16754572999663336,
+          "sensitivity": 0.6186735495455056,
+          "specificity": 0.8353597322922476
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.45805201282686153,
+          "mean_absolute": 0.07000157168010596,
+          "mean_signed": -0.06879375636790377
+        }
+      },
+      "neural_minus_feature_auroc": 0.13206083358999765
+    },
+    "screenshot": {
+      "description": "88 percent inset on a light canvas followed by JPEG quality 85",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7755638190213778,
+          "lower": 0.7687711677815036,
+          "successful_resamples": 200,
+          "upper": 0.7821043356437913
+        },
+        "metrics": {
+          "auprc": 0.7849848977251647,
+          "auroc": 0.7755638190213778,
+          "balanced_accuracy": 0.7025666654754024,
+          "brier": 0.1928448201264324,
+          "count": 17876,
+          "expected_calibration_error": 0.02638197933759101,
+          "f1": 0.6850403034613561,
+          "false_positive_rate_at_90_recall": 0.6292247629670943,
+          "log_loss": 0.5664452928873243,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7259138299208642,
+          "recall": 0.6485242958141623,
+          "recall_at_1_percent_false_positive_rate": 0.15026371899899002,
+          "sensitivity": 0.6485242958141623,
+          "specificity": 0.7566090351366425
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.4951246477424015,
+          "mean_absolute": 0.06240498207837986,
+          "mean_signed": -0.01198132333671283
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8102001242628426,
+          "lower": 0.8050296724701518,
+          "successful_resamples": 200,
+          "upper": 0.8174693597740217
+        },
+        "metrics": {
+          "auprc": 0.803711490609325,
+          "auroc": 0.8102001242628426,
+          "balanced_accuracy": 0.6862977339962771,
+          "brier": 0.20281104459522248,
+          "count": 17876,
+          "expected_calibration_error": 0.14720952014832026,
+          "f1": 0.5989105504587156,
+          "false_positive_rate_at_90_recall": 0.5147796988287786,
+          "log_loss": 0.5887265451394016,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.8288038087681016,
+          "recall": 0.4688587139490517,
+          "recall_at_1_percent_false_positive_rate": 0.1347772416114914,
+          "sensitivity": 0.4688587139490517,
+          "specificity": 0.9037367540435025
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.839686030653323,
+          "mean_absolute": 0.1584437253350759,
+          "mean_signed": -0.15069237645887323
+        }
+      },
+      "neural_minus_feature_auroc": 0.03463630524146477
+    },
+    "sharpen2": {
+      "description": "Pillow sharpness enhancement factor 2.0",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7800529034000039,
+          "lower": 0.773993784624853,
+          "successful_resamples": 200,
+          "upper": 0.7855910325208147
+        },
+        "metrics": {
+          "auprc": 0.7861349299515683,
+          "auroc": 0.7800529034000039,
+          "balanced_accuracy": 0.6320458624648042,
+          "brier": 0.24281050310255287,
+          "count": 17876,
+          "expected_calibration_error": 0.21216455706298515,
+          "f1": 0.7128109073485213,
+          "false_positive_rate_at_90_recall": 0.6102621305075293,
+          "log_loss": 0.7086684313548814,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.5825145949024634,
+          "recall": 0.9181909998877792,
+          "recall_at_1_percent_false_positive_rate": 0.1429693637077769,
+          "sensitivity": 0.9181909998877792,
+          "specificity": 0.34590072504182934
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.5531188628318136,
+          "mean_absolute": 0.2118969966801352,
+          "mean_signed": 0.2118966830817504
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8190162894228938,
+          "lower": 0.8128017641358782,
+          "successful_resamples": 200,
+          "upper": 0.8249834622360662
+        },
+        "metrics": {
+          "auprc": 0.81658004987853,
+          "auroc": 0.8190162894228938,
+          "balanced_accuracy": 0.7383424473395992,
+          "brier": 0.1745917470504539,
+          "count": 17876,
+          "expected_calibration_error": 0.026229077073712845,
+          "f1": 0.7497326203208556,
+          "false_positive_rate_at_90_recall": 0.498159509202454,
+          "log_loss": 0.5208389033343377,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7161099192971703,
+          "recall": 0.7866681629446751,
+          "recall_at_1_percent_false_positive_rate": 0.17663561889799126,
+          "sensitivity": 0.7866681629446751,
+          "specificity": 0.6900167317345232
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.15939463107371765,
+          "mean_absolute": 0.021669260801099304,
+          "mean_signed": 0.01984643555044143
+        }
+      },
+      "neural_minus_feature_auroc": 0.038963386022889956
+    },
+    "webp30": {
+      "description": "WebP recompression at quality 30 with method 6",
+      "feature": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.7765532902270911,
+          "lower": 0.7689802681869574,
+          "successful_resamples": 200,
+          "upper": 0.7825865756863774
+        },
+        "metrics": {
+          "auprc": 0.7896780547207144,
+          "auroc": 0.7765532902270911,
+          "balanced_accuracy": 0.7065376750681258,
+          "brier": 0.1925987793744056,
+          "count": 17876,
+          "expected_calibration_error": 0.03264761547970606,
+          "f1": 0.6765813020672632,
+          "false_positive_rate_at_90_recall": 0.6311210262130508,
+          "log_loss": 0.5666800386163535,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7515766383328764,
+          "recall": 0.6151947031758501,
+          "recall_at_1_percent_false_positive_rate": 0.1563236449332286,
+          "sensitivity": 0.6151947031758501,
+          "specificity": 0.7978806469604015
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.4857014228094698,
+          "mean_absolute": 0.04857211855838073,
+          "mean_signed": -0.03279577096843572
+        }
+      },
+      "neural": {
+        "auroc_grouped_bootstrap_95_percent": {
+          "confidence": 0.95,
+          "estimate": 0.8215003821329635,
+          "lower": 0.8155944058641986,
+          "successful_resamples": 200,
+          "upper": 0.8263316348637448
+        },
+        "metrics": {
+          "auprc": 0.8187450763211427,
+          "auroc": 0.8215003821329635,
+          "balanced_accuracy": 0.7413477505102043,
+          "brier": 0.17321802550438303,
+          "count": 17876,
+          "expected_calibration_error": 0.025210029646538047,
+          "f1": 0.7423381254875738,
+          "false_positive_rate_at_90_recall": 0.49113218070273285,
+          "log_loss": 0.5166569482756846,
+          "negatives": 8965,
+          "positives": 8911,
+          "precision": 0.7372440509131156,
+          "recall": 0.7475030860733924,
+          "recall_at_1_percent_false_positive_rate": 0.18370553248793625,
+          "sensitivity": 0.7475030860733924,
+          "specificity": 0.7351924149470161
+        },
+        "paired_probability_shift_from_clean": {
+          "maximum_absolute": 0.22213435913228585,
+          "mean_absolute": 0.019470304557475736,
+          "mean_signed": -0.006420289273259573
+        }
+      },
+      "neural_minus_feature_auroc": 0.04494709190587243
+    }
+  },
+  "split_membership_sha256": "2ae6738f68802a3d8c0a61a8195f8b378b1f9ac5c298f0d16550699431aee640"
+}

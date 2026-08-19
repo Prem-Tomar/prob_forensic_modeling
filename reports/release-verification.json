@@ -1,0 +1,8 @@
+{
+  "expected_smoke_sha256": "9061556f90da82f77efd2b4feaad6340ee84ce4ab6fc6c6cf6d059978f80a0bc",
+  "install_mode": "local_wheel_no_index_no_dependencies",
+  "installed_smoke_sha256": "9061556f90da82f77efd2b4feaad6340ee84ce4ab6fc6c6cf6d059978f80a0bc",
+  "smoke_report_byte_identical": true,
+  "wheel_filename": "prob_forensic_modeling-0.1.0-py3-none-any.whl",
+  "wheel_sha256": "f41eb958b8590bbc9dd3035848be81b959eaa62a3764a2b018a94b9a89c342c4"
+}

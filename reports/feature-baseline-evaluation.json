@@ -1,0 +1,191 @@
+{
+  "attribution": [
+    {
+      "citation": "Bird, J. J. and Lotfi, A. (2024), CIFAKE, IEEE Access.",
+      "license_id": "MIT",
+      "name": "CIFAKE",
+      "source_url": "https://github.com/jordan-bird/CIFAKE-Real-and-AI-Generated-Synthetic-Images"
+    },
+    {
+      "citation": "Krizhevsky, A. and Hinton, G. (2009), Learning multiple layers of features from tiny images.",
+      "license_id": "MIT",
+      "name": "CIFAR-10",
+      "source_url": "https://www.cs.toronto.edu/~kriz/cifar.html"
+    },
+    {
+      "citation": "Kang, H. et al. (2025), LEGION: Learning to Ground and Explain for Synthetic Image Detection.",
+      "license_id": "Apache-2.0",
+      "name": "SynthScars",
+      "source_url": "https://huggingface.co/datasets/khr0516/SynthScars"
+    }
+  ],
+  "calibration": {
+    "intercept": 0.014089564824350777,
+    "method": "platt",
+    "slope": 1.2641574263954327
+  },
+  "cifake_test": {
+    "blur1": {
+      "auprc": 0.7122930357538698,
+      "auroc": 0.7011811103705522,
+      "balanced_accuracy": 0.5083705926794327,
+      "brier": 0.3302101110211839,
+      "count": 17876,
+      "expected_calibration_error": 0.32737459020530213,
+      "f1": 0.03925438596491228,
+      "false_positive_rate_at_90_recall": 0.7808142777467931,
+      "log_loss": 0.9446143150294736,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.8564593301435407,
+      "recall": 0.020087532263494558,
+      "recall_at_1_percent_false_positive_rate": 0.07664684098305465,
+      "sensitivity": 0.020087532263494558,
+      "specificity": 0.9966536530953709
+    },
+    "clean": {
+      "auprc": 0.7929756534298532,
+      "auroc": 0.7803772110183226,
+      "balanced_accuracy": 0.7117454485620116,
+      "brier": 0.19028291557137528,
+      "count": 17876,
+      "expected_calibration_error": 0.024349210162077806,
+      "f1": 0.7010273376284172,
+      "false_positive_rate_at_90_recall": 0.6294478527607362,
+      "log_loss": 0.5600954660078277,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.7260158691993268,
+      "recall": 0.6777017169790147,
+      "recall_at_1_percent_false_positive_rate": 0.15508921557625407,
+      "sensitivity": 0.6777017169790147,
+      "specificity": 0.7457891801450084
+    },
+    "jpeg30": {
+      "auprc": 0.7922796089939229,
+      "auroc": 0.7807838723428678,
+      "balanced_accuracy": 0.7139303878979733,
+      "brier": 0.19037096292264089,
+      "count": 17876,
+      "expected_calibration_error": 0.02870148440080308,
+      "f1": 0.6919088387796938,
+      "false_positive_rate_at_90_recall": 0.6275515895147797,
+      "log_loss": 0.5614847396511728,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.7476221498371336,
+      "recall": 0.6439232409381663,
+      "recall_at_1_percent_false_positive_rate": 0.1528447985635731,
+      "sensitivity": 0.6439232409381663,
+      "specificity": 0.7839375348577803
+    },
+    "resize50": {
+      "auprc": 0.6950830329042897,
+      "auroc": 0.6866871334632625,
+      "balanced_accuracy": 0.5040487380223957,
+      "brier": 0.34766772494168585,
+      "count": 17876,
+      "expected_calibration_error": 0.3470581712922491,
+      "f1": 0.021693414499169894,
+      "false_positive_rate_at_90_recall": 0.7892916899051868,
+      "log_loss": 1.0057733877912103,
+      "negatives": 8965,
+      "positives": 8911,
+      "precision": 0.7903225806451613,
+      "recall": 0.010997643362136685,
+      "recall_at_1_percent_false_positive_rate": 0.06677140612725845,
+      "sensitivity": 0.010997643362136685,
+      "specificity": 0.9970998326826548
+    }
+  },
+  "claim_scope": "matched_phase_1_research_baseline_not_production_assurance",
+  "clean_auroc_grouped_bootstrap_95_percent": {
+    "confidence": 0.95,
+    "estimate": 0.7803772110183226,
+    "lower": 0.7739644183186631,
+    "successful_resamples": 500,
+    "upper": 0.7862649026650534
+  },
+  "comparison_to_neural": {
+    "neural_minus_feature_auroc": {
+      "blur1": 0.12086171217974273,
+      "clean": 0.044067732324543196,
+      "jpeg30": 0.03849545073695548,
+      "resize50": 0.13206083358999765
+    },
+    "neural_report_sha256": "1988181ffe231fa2f63de03d5df57490e25af78a9900518c3f5e9343fe9101dd",
+    "same_data_audit": true,
+    "same_split_membership": true
+  },
+  "configuration": {
+    "batch_size": 512,
+    "cpu_threads": 8,
+    "epochs": 800,
+    "l2": 0.01,
+    "learning_rate": 0.15,
+    "seed": 20260818
+  },
+  "data_audit": {
+    "exact_duplicate_groups": 1336,
+    "exact_duplicates_removed": 1336,
+    "input_samples": 120000,
+    "perceptual_collision_groups": 18,
+    "retained_samples": 118664,
+    "split_counts": {
+      "test": 17876,
+      "train": 83037,
+      "validation": 17751
+    }
+  },
+  "environment": {
+    "device": "cpu",
+    "pillow": "11.3.0",
+    "python": "3.9.6",
+    "torch": "2.7.1"
+  },
+  "explanation_summary": {
+    "mean_absolute_contribution": {
+      "blue_mean": 0.19054009316661466,
+      "checkerboard_energy": 0.13015226011837538,
+      "clipped_fraction": 0.12937878026603183,
+      "green_mean": 0.04355208295690752,
+      "horizontal_residual": 0.8143774631531935,
+      "laplacian_energy": 0.9732524357978323,
+      "luma_std": 0.15405836218818025,
+      "red_mean": 0.1416880415119248,
+      "saturation_mean": 0.3305796143148124,
+      "vertical_residual": 0.05992848981897439
+    },
+    "sample_count": 256
+  },
+  "final_training_loss": 0.582305450249652,
+  "model": {
+    "architecture": "standardized_logistic_regression",
+    "artifact_sha256": "ae61add3c91fe085f2a460c976e1f5a0ec2fe510260dd941c3e519ae880466e6",
+    "feature_version": "forensic-summary-v1",
+    "parameters": 11,
+    "pretrained_weights": false
+  },
+  "split_membership_sha256": "2ae6738f68802a3d8c0a61a8195f8b378b1f9ac5c298f0d16550699431aee640",
+  "threshold_selected_on_validation": 0.5098172183506002,
+  "training": "from_scratch",
+  "unseen_evaluation_limit": "SynthScars contains synthetic-only holdout images; pairing with CIFAKE real images introduces content, resolution, and source confounds, so this metric is diagnostic rather than a deployment claim.",
+  "unseen_synthscars_with_cifake_real_control": {
+    "auprc": 0.9416186176170572,
+    "auroc": 0.928441,
+    "balanced_accuracy": 0.823,
+    "brier": 0.12433231815017033,
+    "count": 2000,
+    "expected_calibration_error": 0.12081545437525586,
+    "f1": 0.835195530726257,
+    "false_positive_rate_at_90_recall": 0.26,
+    "log_loss": 0.3885313291190918,
+    "negatives": 1000,
+    "positives": 1000,
+    "precision": 0.7813588850174216,
+    "recall": 0.897,
+    "recall_at_1_percent_false_positive_rate": 0.555,
+    "sensitivity": 0.897,
+    "specificity": 0.749
+  }
+}

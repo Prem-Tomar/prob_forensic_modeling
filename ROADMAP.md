@@ -6,13 +6,13 @@ Each phase is a learning milestone with an exit gate. A phase is complete only w
 
 | Phase | Implemented | Remaining exit gate |
 | --- | --- | --- |
-| 0 — Claim and data contract | Architecture, manifest licensing, split/leakage validation, metrics, reproducible CIFAKE collision review | Choose grouping or exclusion for one semantic pair and run the gate on all approved real manifests |
-| 1 — Image MVP | Decoder boundary, interpretable feature model, exact split digest, matched deduplicated CIFAKE/SynthScars report | Meet calibrated acceptance metrics across at least three generator holdouts |
+| 0 — Claim and data contract | Architecture, attributed manifest licensing, hash/path/split/leakage validation, metrics, reproducible CIFAKE collision review | Choose grouping or exclusion for one semantic pair and run the gate on all approved real manifests |
+| 1 — Image MVP | Decoder boundary, interpretable feature model, exact split digest, matched deduplicated CIFAKE/SynthScars report, generic matched-family evaluator | Supply three eligible generator holdouts and meet their calibrated acceptance metrics |
 | 2 — Stronger representations | Scratch spatial-frequency model, validation-only branch ablation, reusable inference API, matched Phase 1 comparison, latency and memory report | Improve the primary generator holdout without losing processing robustness |
-| 3 — Provenance and confidence | Calibration, abstention, contributions, safe local verifier adapter, signer trust policy, late fusion | Approved C2PA verifier conformance and revocation fixtures |
-| 4 — Robustness | Full deterministic CIFAKE codec/post-processing matrix, paired degradation, grouped uncertainty, diagnostic SynthScars transfer | Three or more generator holdouts, matched controls, and worst-slice acceptance |
-| 5 — Video | Scene-aware and uniform sampling, PyAV adapter, audited DAVIS/Keling T2V+I2V/Sora holdouts, matched frame baseline, scratch temporal model, stress and latency reports | Beat matched frame aggregation; add matched controls and another training generator |
-| 6 — Release | Smoke/image/video reports, build and neural locks, hashed local wheel, byte-identical fresh-environment core smoke reproduction | Clean offline neural reproduction and final evidence-to-claim audit |
+| 3 — Provenance and confidence | Calibration, abstention, reliability bins, Wilson rate uncertainty, coverage/selective risk, contributions, safe local verifier adapter, signer trust policy, late fusion, attributed hash-bound conformance runner | Run the conformance gate with an approved C2PA verifier and licensed public fixtures |
+| 4 — Robustness | Full deterministic CIFAKE codec/post-processing matrix, paired degradation, grouped uncertainty, diagnostic SynthScars transfer, governed source/device/category slice evaluator | Three or more generator holdouts with complete slice metadata, matched controls, and worst-slice acceptance |
+| 5 — Video | Scene-aware and uniform sampling, PyAV adapter, audited DAVIS/Keling T2V+I2V/Sora holdouts, reusable calibrated temporal inference, portable matched-video manifests, frozen frame comparison, stress and latency reports | Supply eligible matched controls and another training generator, then beat frame aggregation |
+| 6 — Release | Smoke/image/video reports, build and neural locks, deterministic wheel, semantic checkpoint/report verification, exact-seed local neural reproduction | Clean offline neural installation and final evidence-to-claim audit |
 
 The real-image report establishes a research baseline, not production assurance. Rows remain open until every listed robustness, provenance, video, and release gate is satisfied.
 

@@ -21,7 +21,11 @@ forensic-train-image = "forensic_model.neural_experiment:main"
 forensic-train-video = "forensic_model.neural_video_experiment:main"
 forensic-evaluate-video-frames = "forensic_model.neural_video_baseline_experiment:main"
 forensic-evaluate-image-stress = "forensic_model.image_stress_experiment:main"
+forensic-evaluate-manifest-holdouts = "forensic_model.manifest_holdout_experiment:main"
+forensic-evaluate-manifest-video-holdouts = "forensic_model.manifest_video_holdout_experiment:main"
 forensic-review-image-collisions = "forensic_model.near_duplicate_review:main"
+forensic-test-provenance = "forensic_model.provenance_conformance:main"
+forensic-verify-report = "forensic_model.report_verify:main"
 
 [project.optional-dependencies]
 common-images = ["Pillow>=10,<12"]

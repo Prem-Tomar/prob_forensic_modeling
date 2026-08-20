@@ -73,9 +73,17 @@ print(result.spatial_contribution, result.deployed_frequency_contribution)
 
 `forensic-review-image-collisions` creates a path-free aggregate inventory of perceptual-hash collisions and an optional ignored contact sheet. Compact-hash collisions are measured and reviewed; they are never silently merged.
 
+`forensic-evaluate-manifest-holdouts` admits portable, hash-verified local manifests and evaluates every content-matched generator family with the frozen detector, including matched-control-source, semantic-category, and capture-device slices. Reports remain acceptance-ineligible until slice metadata is complete and the documented minimum of three families and 1,000 matched content groups per class per family is present.
+
+## Validate a provenance adapter
+
+Applications can implement the `ProvenanceVerifier` protocol directly or use `JsonProcessVerifier` to isolate an installed credential verifier behind a strict local JSON boundary. `forensic-test-provenance` evaluates that verifier against an attributed, hash-bound suite containing signed, tampered, revoked, unsupported, and absent-credential fixtures. See [docs/provenance.md](docs/provenance.md) for the manifest contract and conservative evidence-fusion rules.
+
 ## Reproduce the real-video baseline
 
 Install the same lock file, add the credited DAVIS 2017 and GenVidBench subsets under ignored local data directories, then follow [docs/real_video_results.md](docs/real_video_results.md). The `forensic-train-video` entry point performs source-grouped training, validation-only calibration, unseen-generator evaluation, and post-processing stress tests.
+
+Applications can load `CalibratedTemporalDetector` for explainable tensor-batch inference. Additional approved video families can use the hash-verified manifest adapter and `forensic-evaluate-manifest-video-holdouts`, which compares the frozen temporal model with its bound validation-calibrated frame baseline on identical content-matched clips and governed source/device/category slices.
 
 ## Build an offline-installable library wheel
 

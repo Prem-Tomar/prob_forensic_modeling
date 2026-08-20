@@ -11,6 +11,7 @@ import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
+from urllib.parse import urlparse
 
 
 ALLOWED_LABELS = frozenset({"camera_or_human", "synthetic"})
@@ -34,10 +35,14 @@ REQUIRED_COLUMNS = (
     "label",
     "split",
     "source",
+    "source_url",
     "source_type",
     "license_id",
+    "citation",
     "generator_family",
     "transformation",
+    "semantic_category",
+    "capture_device",
 )
 UNKNOWN_LICENSES = frozenset({"", "unknown", "unverified", "none", "n/a"})
 
@@ -55,10 +60,14 @@ class Sample:
     label: str
     split: str
     source: str
+    source_url: str
     source_type: str
     license_id: str
+    citation: str
     generator_family: str
     transformation: str
+    semantic_category: str = ""
+    capture_device: str = ""
 
     @classmethod
     def from_row(cls, row: dict[str, str]) -> "Sample":
@@ -87,6 +96,7 @@ def validate_manifest(samples: Sequence[Sample]) -> None:
     seen_ids: set[str] = set()
     seen_hashes: dict[str, str] = {}
     group_splits: dict[str, str] = {}
+    source_attributions: dict[str, tuple[str, str, str]] = {}
 
     for sample in samples:
         if not sample.sample_id:
@@ -103,6 +113,22 @@ def validate_manifest(samples: Sequence[Sample]) -> None:
             raise ManifestError(f"{sample.sample_id}: unsupported split {sample.split!r}")
         if sample.license_id.lower() in UNKNOWN_LICENSES:
             raise ManifestError(f"{sample.sample_id}: license_id is not approved")
+        if not sample.source or not sample.source_type or not sample.transformation:
+            raise ManifestError(f"{sample.sample_id}: source, source_type, and transformation are required")
+        if not sample.semantic_category:
+            raise ManifestError(f"{sample.sample_id}: semantic_category must not be empty")
+        if sample.source_type.casefold() in {"camera", "captured"} and not sample.capture_device:
+            raise ManifestError(f"{sample.sample_id}: camera rows require capture_device")
+        parsed_url = urlparse(sample.source_url)
+        if parsed_url.scheme not in {"http", "https"} or not parsed_url.netloc:
+            raise ManifestError(f"{sample.sample_id}: source_url must be an HTTP(S) URL")
+        if not sample.citation:
+            raise ManifestError(f"{sample.sample_id}: citation must not be empty")
+        attribution = (sample.source_url, sample.license_id, sample.citation)
+        previous_attribution = source_attributions.get(sample.source)
+        if previous_attribution is not None and previous_attribution != attribution:
+            raise ManifestError(f"{sample.sample_id}: source attribution is inconsistent")
+        source_attributions[sample.source] = attribution
         if len(sample.sha256) != 64 or any(char not in "0123456789abcdef" for char in sample.sha256.lower()):
             raise ManifestError(f"{sample.sample_id}: sha256 must be 64 hexadecimal characters")
 
@@ -122,6 +148,7 @@ def validate_manifest(samples: Sequence[Sample]) -> None:
             raise ManifestError(f"{sample.sample_id}: synthetic rows require generator_family")
 
     _validate_generator_holdout(samples)
+    _validate_source_holdout(samples)
 
 
 def _validate_generator_holdout(samples: Iterable[Sample]) -> None:
@@ -138,6 +165,28 @@ def _validate_generator_holdout(samples: Iterable[Sample]) -> None:
     overlap = sorted(development_families & holdout_families)
     if overlap:
         raise ManifestError(f"generator families leak into holdout: {', '.join(overlap)}")
+
+
+def _validate_source_holdout(samples: Iterable[Sample]) -> None:
+    development_sources: set[str] = set()
+    development_devices: set[str] = set()
+    holdout_rows: list[Sample] = []
+    for sample in samples:
+        if sample.label == "camera_or_human" and sample.split in {"train", "validation", "calibration"}:
+            development_sources.add(sample.source.casefold())
+            if sample.capture_device:
+                development_devices.add(sample.capture_device.casefold())
+        elif sample.split == "source_holdout":
+            if sample.label != "camera_or_human":
+                raise ManifestError(f"{sample.sample_id}: source_holdout rows must be camera_or_human")
+            holdout_rows.append(sample)
+    for sample in holdout_rows:
+        source_seen = sample.source.casefold() in development_sources
+        device_seen = bool(sample.capture_device) and sample.capture_device.casefold() in development_devices
+        if source_seen and (not sample.capture_device or device_seen):
+            raise ManifestError(
+                f"{sample.sample_id}: source_holdout must introduce an unseen source or capture_device"
+            )
 
 
 def manifest_digest(path: Path) -> str:

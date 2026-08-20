@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import random
 from dataclasses import asdict, dataclass
+from statistics import NormalDist
 from typing import Callable, Sequence
 
 
@@ -38,6 +39,47 @@ class ConfidenceInterval:
     upper: float
     confidence: float
     successful_resamples: int
+
+
+@dataclass(frozen=True)
+class ReliabilityBin:
+    count: int
+    minimum_probability: float
+    maximum_probability: float
+    mean_probability: float
+    observed_positive_rate: float
+    absolute_calibration_gap: float
+
+
+@dataclass(frozen=True)
+class RateInterval:
+    successes: int
+    trials: int
+    estimate: float
+    lower: float
+    upper: float
+    confidence: float
+
+
+@dataclass(frozen=True)
+class SelectiveMetrics:
+    count: int
+    covered: int
+    abstained: int
+    coverage: float
+    selective_accuracy: float | None
+    selective_risk: float | None
+
+
+@dataclass(frozen=True)
+class ClassificationDiagnostics:
+    reliability_bins: tuple[ReliabilityBin, ...]
+    sensitivity_wilson_95_percent: RateInterval
+    specificity_wilson_95_percent: RateInterval
+    selective: SelectiveMetrics
+
+    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
 
 
 def binary_metrics(
@@ -126,6 +168,94 @@ def grouped_bootstrap_interval(
         confidence=confidence,
         successful_resamples=len(estimates),
     )
+
+
+def classification_diagnostics(
+    labels: Sequence[int],
+    probabilities: Sequence[float],
+    *,
+    threshold: float,
+    abstain_margin: float,
+    calibration_bins: int = 15,
+) -> ClassificationDiagnostics:
+    """Report calibration, rate uncertainty, coverage, and selective risk."""
+
+    _validate(labels, probabilities)
+    if not 0.0 < threshold < 1.0 or not 0.0 <= abstain_margin < min(threshold, 1.0 - threshold):
+        raise ValueError("invalid diagnostic decision configuration")
+    predictions = [int(probability >= threshold) for probability in probabilities]
+    true_positive = sum(prediction == 1 and label == 1 for prediction, label in zip(predictions, labels))
+    true_negative = sum(prediction == 0 and label == 0 for prediction, label in zip(predictions, labels))
+    covered = [
+        index
+        for index, probability in enumerate(probabilities)
+        if abs(probability - threshold) > abstain_margin
+    ]
+    correct = sum(predictions[index] == labels[index] for index in covered)
+    selective_accuracy = correct / len(covered) if covered else None
+    return ClassificationDiagnostics(
+        reliability_bins(labels, probabilities, bins=calibration_bins),
+        wilson_interval(true_positive, sum(labels)),
+        wilson_interval(true_negative, len(labels) - sum(labels)),
+        SelectiveMetrics(
+            count=len(labels),
+            covered=len(covered),
+            abstained=len(labels) - len(covered),
+            coverage=len(covered) / len(labels),
+            selective_accuracy=selective_accuracy,
+            selective_risk=None if selective_accuracy is None else 1.0 - selective_accuracy,
+        ),
+    )
+
+
+def reliability_bins(
+    labels: Sequence[int],
+    probabilities: Sequence[float],
+    *,
+    bins: int = 15,
+) -> tuple[ReliabilityBin, ...]:
+    """Return deterministic equal-mass calibration bins."""
+
+    _validate(labels, probabilities)
+    if bins < 2:
+        raise ValueError("reliability bin count must be at least two")
+    ordered = sorted(zip(probabilities, labels))
+    bin_count = min(bins, len(ordered))
+    result = []
+    for bin_index in range(bin_count):
+        start = bin_index * len(ordered) // bin_count
+        end = (bin_index + 1) * len(ordered) // bin_count
+        rows = ordered[start:end]
+        mean_probability = sum(probability for probability, _ in rows) / len(rows)
+        observed = sum(label for _, label in rows) / len(rows)
+        result.append(
+            ReliabilityBin(
+                len(rows),
+                rows[0][0],
+                rows[-1][0],
+                mean_probability,
+                observed,
+                abs(mean_probability - observed),
+            )
+        )
+    return tuple(result)
+
+
+def wilson_interval(successes: int, trials: int, *, confidence: float = 0.95) -> RateInterval:
+    """Return a Wilson score interval for one observed binary rate."""
+
+    if trials <= 0 or successes < 0 or successes > trials or not 0.0 < confidence < 1.0:
+        raise ValueError("invalid Wilson interval inputs")
+    estimate = successes / trials
+    z_score = NormalDist().inv_cdf(0.5 + confidence / 2.0)
+    denominator = 1.0 + z_score**2 / trials
+    center = (estimate + z_score**2 / (2.0 * trials)) / denominator
+    radius = (
+        z_score
+        * math.sqrt(estimate * (1.0 - estimate) / trials + z_score**2 / (4.0 * trials**2))
+        / denominator
+    )
+    return RateInterval(successes, trials, estimate, max(0.0, center - radius), min(1.0, center + radius), confidence)
 
 
 def auroc(labels: Sequence[int], probabilities: Sequence[float]) -> float:

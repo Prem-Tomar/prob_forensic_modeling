@@ -15,10 +15,14 @@ def sample(**changes: str) -> Sample:
         "label": "camera_or_human",
         "split": "train",
         "source": "fixture",
+        "source_url": "https://example.test/fixture",
         "source_type": "procedural",
         "license_id": "CC0-1.0",
+        "citation": "Fixture dataset, version 1.",
         "generator_family": "",
         "transformation": "original",
+        "semantic_category": "natural-scene",
+        "capture_device": "",
     }
     values.update(changes)
     return Sample(**values)
@@ -70,6 +74,56 @@ class ManifestValidationTests(unittest.TestCase):
     def test_rejects_unknown_license(self) -> None:
         with self.assertRaisesRegex(ManifestError, "license_id is not approved"):
             validate_manifest([sample(license_id="unknown")])
+
+    def test_rejects_missing_or_inconsistent_attribution(self) -> None:
+        with self.assertRaisesRegex(ManifestError, "source_url"):
+            validate_manifest([sample(source_url="fixture")])
+        rows = [
+            sample(),
+            sample(sample_id="real-2", content_group="scene-2", sha256="b" * 64, citation="Different work."),
+        ]
+        with self.assertRaisesRegex(ManifestError, "attribution is inconsistent"):
+            validate_manifest(rows)
+
+    def test_requires_semantic_category_and_camera_device(self) -> None:
+        with self.assertRaisesRegex(ManifestError, "semantic_category"):
+            validate_manifest([sample(semantic_category="")])
+        with self.assertRaisesRegex(ManifestError, "capture_device"):
+            validate_manifest([sample(source_type="camera")])
+
+    def test_requires_source_holdout_to_introduce_unseen_real_evidence(self) -> None:
+        development = sample(source_type="camera", capture_device="camera-a")
+        valid_holdout = sample(
+            sample_id="holdout-real",
+            content_group="scene-2",
+            sha256="b" * 64,
+            split="source_holdout",
+            source_type="camera",
+            capture_device="camera-b",
+        )
+        validate_manifest([development, valid_holdout])
+
+        leaked = sample(
+            sample_id="leaked-real",
+            content_group="scene-3",
+            sha256="c" * 64,
+            split="source_holdout",
+            source_type="camera",
+            capture_device="camera-a",
+        )
+        with self.assertRaisesRegex(ManifestError, "unseen source or capture_device"):
+            validate_manifest([development, leaked])
+
+        synthetic = sample(
+            sample_id="synthetic-source-holdout",
+            content_group="scene-4",
+            sha256="d" * 64,
+            label="synthetic",
+            split="source_holdout",
+            generator_family="fixture-a",
+        )
+        with self.assertRaisesRegex(ManifestError, "must be camera_or_human"):
+            validate_manifest([synthetic])
 
     def test_loads_csv_and_hashes_exact_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

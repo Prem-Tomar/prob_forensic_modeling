@@ -58,6 +58,8 @@ class VideoExample:
     generator_family: str
     split: str
     media_type: str
+    semantic_category: str = ""
+    capture_device: str = ""
 
 
 @dataclass(frozen=True)

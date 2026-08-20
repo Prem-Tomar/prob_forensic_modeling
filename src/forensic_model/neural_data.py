@@ -32,6 +32,8 @@ class ImageExample:
     content_group: str
     source: str
     generator_family: str
+    semantic_category: str = ""
+    capture_device: str = ""
 
 
 @dataclass(frozen=True)

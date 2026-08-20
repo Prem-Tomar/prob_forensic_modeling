@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
+import json
 from pathlib import Path
 
 import torch
@@ -10,6 +12,7 @@ from torch import Tensor
 from torch.utils.data import DataLoader, Dataset
 
 from forensic_model.calibration import PlattCalibrator
+from forensic_model.checkpoint_digest import semantic_checkpoint_sha256
 from forensic_model.neural import SpatialFrequencyDetector
 from forensic_model.neural_inference import CalibratedNeuralImageDetector
 from forensic_model.neural_training import balanced_accuracy_threshold
@@ -55,6 +58,31 @@ class ValidatedFrameAggregator:
     frame_aggregator: FrozenFrameAggregator
     clip_calibrator: PlattCalibrator
     threshold: float
+
+    @classmethod
+    def load(cls, image_checkpoint: Path, validation_report: Path) -> "ValidatedFrameAggregator":
+        """Restore validation-only clip calibration and bind it to the image checkpoint."""
+
+        try:
+            report = json.loads(validation_report.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+            raise ValueError("cannot read frame-aggregation validation report") from error
+        if not isinstance(report, dict):
+            raise ValueError("frame-aggregation validation report must be an object")
+        if report.get("image_checkpoint_sha256") != _sha256(image_checkpoint):
+            raise ValueError("frame-aggregation report references a different checkpoint file")
+        expected_semantic = report.get("image_checkpoint_semantic_sha256")
+        if expected_semantic != semantic_checkpoint_sha256(image_checkpoint):
+            raise ValueError("frame-aggregation report references different checkpoint semantics")
+        calibration = report.get("clip_calibration")
+        threshold = report.get("threshold_selected_on_validation")
+        if not isinstance(calibration, dict) or threshold is None:
+            raise ValueError("frame-aggregation report lacks validation calibration")
+        return cls(
+            FrozenFrameAggregator.load(image_checkpoint),
+            PlattCalibrator.from_dict(calibration),
+            float(threshold),
+        )
 
     def transform(self, probability: float) -> float:
         return self.clip_calibrator.transform(probability)
@@ -121,3 +149,11 @@ def score_validated_frame_aggregation(
         batch_size=batch_size,
     )
     return [aggregator.transform(score) for score in scores], labels, groups
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()

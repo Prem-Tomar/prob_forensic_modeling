@@ -1,5 +1,7 @@
 import tempfile
 import unittest
+import hashlib
+import json
 from pathlib import Path
 
 try:
@@ -78,6 +80,54 @@ class FrozenFrameAggregatorTests(unittest.TestCase):
             save_neural_checkpoint(path, create_scratch_detector(seed=3), metadata={})
             with self.assertRaisesRegex(ValueError, "calibrated inference"):
                 FrozenFrameAggregator.load(path)
+
+    def test_restores_clip_calibration_only_for_bound_checkpoint(self) -> None:
+        from forensic_model.checkpoint_digest import semantic_checkpoint_sha256
+        from forensic_model.neural_video_baseline import ValidatedFrameAggregator
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            checkpoint = root / "image.pt"
+            report = root / "frames.json"
+            self._checkpoint(checkpoint)
+            report.write_text(
+                json.dumps(
+                    {
+                        "image_checkpoint_sha256": hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+                        "image_checkpoint_semantic_sha256": semantic_checkpoint_sha256(checkpoint),
+                        "clip_calibration": {"method": "platt", "slope": 1.4, "intercept": -0.3},
+                        "threshold_selected_on_validation": 0.62,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            restored = ValidatedFrameAggregator.load(checkpoint, report)
+
+        self.assertEqual(restored.threshold, 0.62)
+        self.assertEqual(restored.clip_calibrator.slope, 1.4)
+
+    def test_rejects_frame_calibration_bound_to_another_checkpoint(self) -> None:
+        from forensic_model.neural_video_baseline import ValidatedFrameAggregator
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            checkpoint = root / "image.pt"
+            report = root / "frames.json"
+            self._checkpoint(checkpoint)
+            report.write_text(
+                json.dumps(
+                    {
+                        "image_checkpoint_sha256": "0" * 64,
+                        "image_checkpoint_semantic_sha256": "0" * 64,
+                        "clip_calibration": {"method": "platt", "slope": 1.0, "intercept": 0.0},
+                        "threshold_selected_on_validation": 0.5,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "different checkpoint file"):
+                ValidatedFrameAggregator.load(checkpoint, report)
 
 
 if __name__ == "__main__":

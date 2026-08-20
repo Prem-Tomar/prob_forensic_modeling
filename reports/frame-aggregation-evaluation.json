@@ -68,6 +68,7 @@
     }
   },
   "evaluation_limit": "The frozen image detector was trained on CIFAKE, while video labels come from DAVIS and GenVidBench. Clip calibration uses only the video validation split; source and content confounds remain.",
+  "image_checkpoint_semantic_sha256": "9c5356f8f5db28b4015774521b5a8043e6cb78cba4a6267445f453f6eedf5783",
   "image_checkpoint_sha256": "fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a",
   "model_training": "frozen_image_detector_trained_from_scratch",
   "threshold_selected_on_validation": 0.8113008269798305,

@@ -70,7 +70,7 @@ PYTHONPATH=src python3 -m forensic_model.neural_video_baseline_experiment \
   --output reports/frame-aggregation-evaluation.json
 ```
 
-The frame-aggregation report SHA-256 is `2b80964abcfc5205ff0fe52da8aa748d3dd2800b4d0dad7b92019bd0c4dda7e8` and its frozen image checkpoint SHA-256 is `fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a`.
+The frame-aggregation report SHA-256 is `eee2dacd201e746e61b8d12b14a40d1e0ed4b0ed689f208688d220ce72a2f675`. Its frozen image checkpoint has raw SHA-256 `fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a` and semantic SHA-256 `9c5356f8f5db28b4015774521b5a8043e6cb78cba4a6267445f453f6eedf5783`.
 
 ## Limits and next experiment
 

@@ -12,6 +12,7 @@ from typing import Sequence
 
 import av
 
+from forensic_model.checkpoint_digest import semantic_checkpoint_sha256
 from forensic_model.metrics import auroc, binary_metrics, grouped_bootstrap_interval
 from forensic_model.neural_video_baseline import (
     FrozenFrameAggregator,
@@ -91,6 +92,7 @@ def run_frame_aggregation_experiment(
             "seed": seed,
         },
         "image_checkpoint_sha256": _sha256(image_checkpoint),
+        "image_checkpoint_semantic_sha256": semantic_checkpoint_sha256(image_checkpoint),
         "data_audit": asdict(bundle.audit),
         "attribution": [asdict(item) for item in bundle.attributions],
         "clip_calibration": calibrated.clip_calibrator.to_dict(),

@@ -146,8 +146,15 @@
   "model": {
     "architecture": "spatial-frequency-v1",
     "checkpoint_sha256": "fd9b220f746a5e06c6c5b866797b605acd6cd10d5778fb66fec5bacba101642a",
+    "checkpoint_semantic_sha256": "9c5356f8f5db28b4015774521b5a8043e6cb78cba4a6267445f453f6eedf5783",
     "parameters": 76113,
     "pretrained_weights": false
+  },
+  "reproducibility": {
+    "comparison_schema": "semantic-report-v1",
+    "ignored_fields": [
+      "/model/checkpoint_sha256"
+    ]
   },
   "robust_branch_selection": {
     "frequency_weight": 0.0,

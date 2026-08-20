@@ -1,0 +1,13 @@
+{
+  "candidate_file_sha256": "6b694167bf15e3723bb94ccc5619a8b7828d41502d1b3d2f18f4aa491ce2c7f5",
+  "candidate_filename": "real-image-reproduction.json",
+  "candidate_semantic_sha256": "e7a621f01f4f6880ef981217bf4833d06fd10b77f8805a83e0a3892483056b75",
+  "comparison_schema": "semantic-report-v1",
+  "expected_file_sha256": "c8bb5842a5e459f9308f12aa7ab083ef60ca1597d1db35fe41bccbf858e9f975",
+  "expected_filename": "real-image-evaluation.json",
+  "expected_semantic_sha256": "e7a621f01f4f6880ef981217bf4833d06fd10b77f8805a83e0a3892483056b75",
+  "ignored_fields": [
+    "/model/checkpoint_sha256"
+  ],
+  "semantic_evidence_identical": true
+}

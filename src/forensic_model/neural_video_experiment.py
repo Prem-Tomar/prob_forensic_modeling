@@ -16,6 +16,7 @@ import PIL
 import torch
 from torch.utils.data import DataLoader
 
+from forensic_model.checkpoint_digest import semantic_checkpoint_sha256
 from forensic_model.metrics import auroc, binary_metrics, grouped_bootstrap_interval
 from forensic_model.neural_video import save_temporal_checkpoint
 from forensic_model.neural_video_data import VideoDatasetBundle, discover_video_benchmark
@@ -135,6 +136,7 @@ def run_real_video_experiment(
             "parameters": sum(parameter.numel() for parameter in detector.model.parameters()),
             "pretrained_weights": False,
             "checkpoint_sha256": _sha256(checkpoint),
+            "checkpoint_semantic_sha256": semantic_checkpoint_sha256(checkpoint),
         },
         "data_audit": asdict(bundle.audit),
         "attribution": [asdict(item) for item in bundle.attributions],
@@ -155,6 +157,15 @@ def run_real_video_experiment(
             "content, codec, duration, and collection-source confounds remain; results are diagnostic, not a "
             "deployment or generator-attribution claim."
         ),
+        "reproducibility": {
+            "comparison_schema": "semantic-report-v1",
+            "ignored_fields": [
+                "/model/checkpoint_sha256",
+                "/timing/generated_decode_inference_seconds",
+                "/timing/seconds_per_input_minute",
+                "/training_history/*/elapsed_seconds",
+            ],
+        },
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

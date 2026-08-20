@@ -1,0 +1,16 @@
+{
+  "candidate_file_sha256": "6fba5c2dd52666ae32b561bccf4882757e3c1f154da96644ac14c4d5f67ed4ba",
+  "candidate_filename": "real-video-reproduction.json",
+  "candidate_semantic_sha256": "0e100c54dcee6521f0ee7c62ac5dfcc88dcde00b3cf7cd138d11984e330dd38e",
+  "comparison_schema": "semantic-report-v1",
+  "expected_file_sha256": "5ae1cc9d45fc860cfdfe39aabc526e9dd482573462b1af68ad340374b1345f09",
+  "expected_filename": "real-video-evaluation.json",
+  "expected_semantic_sha256": "0e100c54dcee6521f0ee7c62ac5dfcc88dcde00b3cf7cd138d11984e330dd38e",
+  "ignored_fields": [
+    "/model/checkpoint_sha256",
+    "/timing/generated_decode_inference_seconds",
+    "/timing/seconds_per_input_minute",
+    "/training_history/*/elapsed_seconds"
+  ],
+  "semantic_evidence_identical": true
+}

@@ -15,6 +15,7 @@ import torch
 import torchvision
 from torch.utils.data import DataLoader
 
+from forensic_model.checkpoint_digest import semantic_checkpoint_sha256
 from forensic_model.metrics import auroc, binary_metrics, grouped_bootstrap_interval
 from forensic_model.neural import save_neural_checkpoint
 from forensic_model.neural_data import (
@@ -117,6 +118,7 @@ def run_real_image_experiment(
             "parameters": sum(parameter.numel() for parameter in detector.model.parameters()),
             "pretrained_weights": False,
             "checkpoint_sha256": _sha256(checkpoint),
+            "checkpoint_semantic_sha256": semantic_checkpoint_sha256(checkpoint),
         },
         "data_audit": asdict(bundle.audit),
         "split_membership_sha256": image_split_digest(bundle),
@@ -140,6 +142,10 @@ def run_real_image_experiment(
             "resolution, and source confounds, so this metric is diagnostic rather than a deployment claim."
         ),
         "explanation_summary": explanations,
+        "reproducibility": {
+            "comparison_schema": "semantic-report-v1",
+            "ignored_fields": ["/model/checkpoint_sha256"],
+        },
     }
     rendered = json.dumps(report, indent=2, sort_keys=True) + "\n"
     output.parent.mkdir(parents=True, exist_ok=True)

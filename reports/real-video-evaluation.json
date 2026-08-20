@@ -163,8 +163,18 @@
   "model": {
     "architecture": "temporal-residual-v1",
     "checkpoint_sha256": "c2f33b9f80c5b29b334d98ee6a63faeccfb5e736459bee089d8079ef3fd71eb3",
+    "checkpoint_semantic_sha256": "e238035da14a3de792bb337c5cdeb890ed9c3f82d62521570713736937e6b7f8",
     "parameters": 21322,
     "pretrained_weights": false
+  },
+  "reproducibility": {
+    "comparison_schema": "semantic-report-v1",
+    "ignored_fields": [
+      "/model/checkpoint_sha256",
+      "/timing/generated_decode_inference_seconds",
+      "/timing/seconds_per_input_minute",
+      "/training_history/*/elapsed_seconds"
+    ]
   },
   "source_summary": {
     "DAVIS-2017": {

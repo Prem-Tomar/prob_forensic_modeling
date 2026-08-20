@@ -34,6 +34,23 @@ PYTHONPATH=src python -m forensic_model.release_verify \
 
 The recorded audit completed this core-library check successfully. It does not prove clean neural reproduction: that requires the pinned neural wheels, approved local datasets, ignored checkpoints, and sufficient CPU/storage to reproduce every real report without network access.
 
+## Neural evidence reproduction
+
+Torch checkpoint containers are not byte-canonical: two saves can differ even when their configuration, metadata, tensor names, dtypes, shapes, and values are identical. `checkpoint_semantic_sha256` hashes those semantic elements with length-delimited canonical encoding while retaining the raw file hash for transport-integrity checks.
+
+Real reports declare a small, explicit list of volatile JSON fields. Compare a fresh run against the committed evidence with:
+
+```bash
+forensic-verify-report \
+  --expected reports/real-image-evaluation.json \
+  --candidate /tmp/real-image-reproduction.json \
+  --output /tmp/real-image-reproduction-verification.json
+```
+
+The verifier requires both reports to declare the same sorted `semantic-report-v1` contract. It removes only those declared fields, hashes all remaining evidence as canonical JSON, writes the result before failing on a mismatch, and never treats timing or serialization-container differences as metric differences.
+
+An exact-seed local rerun reproduced every image and video metric, model tensor, and checkpoint metadata. Raw checkpoint bytes and video timings differed as expected. This verifies deterministic training in the existing locked environment, but clean offline installation remains open until the pinned neural wheels are available locally.
+
 For a real report, replace fixture construction with approved manifest-backed adapters while retaining the same split checks and evaluator. Record the environment lock, exact manifest/file hashes, model/weight license records, code revision, configuration, timing, hardware, all requested slices, uncertainty intervals, and failures. Never tune the model, calibrator, threshold, or abstention policy against final test results.
 
 The frozen image stress report is reproduced independently of training:

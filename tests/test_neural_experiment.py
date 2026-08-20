@@ -25,6 +25,8 @@ class NeuralExperimentTests(unittest.TestCase):
                     "/reports/result.json",
                     "--checkpoint",
                     "/artifacts/model.pt",
+                    "--identity-policy",
+                    "/data/reviewed-identities.json",
                     "--epochs",
                     "3",
                     "--batch-size",
@@ -39,6 +41,7 @@ class NeuralExperimentTests(unittest.TestCase):
         self.assertEqual(positional, (Path("/data/cifake"), Path("/data/synthscars")))
         self.assertEqual(keywords["output"], Path("/reports/result.json"))
         self.assertEqual(keywords["checkpoint"], Path("/artifacts/model.pt"))
+        self.assertEqual(keywords["identity_policy"], Path("/data/reviewed-identities.json"))
         self.assertEqual(keywords["training_config"].epochs, 3)
         self.assertEqual(keywords["training_config"].batch_size, 16)
         self.assertEqual(keywords["training_config"].seed, 9)

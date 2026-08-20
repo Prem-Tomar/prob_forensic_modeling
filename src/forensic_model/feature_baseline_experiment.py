@@ -8,7 +8,7 @@ import json
 import platform
 from dataclasses import asdict
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Sequence
 
 import PIL
 import torch
@@ -37,11 +37,12 @@ def run_feature_baseline_experiment(
     output: Path,
     artifact: Path,
     neural_report: Path | None = None,
+    identity_policy: Path | None = None,
     training_config: FeatureTrainingConfig = FeatureTrainingConfig(),
 ) -> dict[str, object]:
     """Fit and evaluate the Phase 1 model on the neural model's frozen splits."""
 
-    bundle = discover_cifake(cifake_root)
+    bundle = discover_cifake(cifake_root, identity_policy=identity_policy)
     training_features, training_labels, _ = extract_dataset_features(
         PillowImageDataset(bundle.train, evaluation_transform()),
         batch_size=training_config.batch_size,
@@ -133,6 +134,8 @@ def run_feature_baseline_experiment(
     }
     if neural_report is not None:
         report["comparison_to_neural"] = _compare_neural(report, neural_report)
+    if bundle.identity_policy is not None:
+        report["identity_policy"] = asdict(bundle.identity_policy)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return report
@@ -145,6 +148,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--artifact", type=Path, required=True)
     parser.add_argument("--neural-report", type=Path)
+    parser.add_argument("--identity-policy", type=Path)
     parser.add_argument("--epochs", type=int, default=800)
     parser.add_argument("--batch-size", type=int, default=512)
     parser.add_argument("--cpu-threads", type=int, default=8)
@@ -156,6 +160,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
         output=options.output,
         artifact=options.artifact,
         neural_report=options.neural_report,
+        identity_policy=options.identity_policy,
         training_config=FeatureTrainingConfig(
             epochs=options.epochs,
             batch_size=options.batch_size,
@@ -190,7 +195,7 @@ def _contribution_summary(model, features: torch.Tensor) -> dict[str, object]:
     }
 
 
-def _compare_neural(feature_report: dict[str, object], neural_report_path: Path) -> dict[str, object]:
+def _compare_neural(feature_report: dict[str, Any], neural_report_path: Path) -> dict[str, object]:
     neural = json.loads(neural_report_path.read_text(encoding="utf-8"))
     if neural.get("data_audit") != feature_report["data_audit"]:
         raise ValueError("neural comparison report does not use the identical CIFAKE audit")

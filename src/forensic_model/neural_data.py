@@ -15,6 +15,7 @@ from torchvision import transforms
 
 from forensic_model.cifake import discover_cifake_candidates
 from forensic_model.data_audit import AuditSummary, PartitionedSample, partition_candidates, sha256_file
+from forensic_model.identity_policy import IdentityPolicyAudit, apply_identity_policy
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,7 @@ class ImageDatasetBundle:
     test: tuple[ImageExample, ...]
     audit: AuditSummary
     attributions: tuple[DatasetAttribution, ...]
+    identity_policy: IdentityPolicyAudit | None = None
 
 
 def image_split_digest(bundle: ImageDatasetBundle) -> str:
@@ -97,10 +99,18 @@ class PillowImageDataset(Dataset[tuple[Tensor, int, str]]):
         return self.transform(image), example.label, example.content_group
 
 
-def discover_cifake(root: Path, *, seed: str = "cifake-split-v1") -> ImageDatasetBundle:
+def discover_cifake(
+    root: Path,
+    *,
+    seed: str = "cifake-split-v1",
+    identity_policy: Path | None = None,
+) -> ImageDatasetBundle:
     """Audit every CIFAKE image and replace its leaky published split."""
 
     candidates = discover_cifake_candidates(root)
+    policy_audit = None
+    if identity_policy is not None:
+        candidates, policy_audit = apply_identity_policy(candidates, identity_policy)
     partitioned, audit = partition_candidates(candidates, seed=seed)
     splits: dict[str, list[ImageExample]] = {"train": [], "validation": [], "test": []}
     for row in partitioned:
@@ -111,6 +121,7 @@ def discover_cifake(root: Path, *, seed: str = "cifake-split-v1") -> ImageDatase
         test=tuple(splits["test"]),
         audit=audit,
         attributions=CIFAKE_ATTRIBUTIONS,
+        identity_policy=policy_audit,
     )
 
 

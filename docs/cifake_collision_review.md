@@ -33,3 +33,7 @@ The current frozen experiment keeps the two files as distinct exact identities. 
 2. retain one canonical observation and exclude the alternate color version.
 
 Those policies teach different models: grouping preserves transformation diversity, while exclusion removes duplicate weighting. Changing the policy changes the frozen split-membership contract and requires a new model/report generation rather than silently rewriting existing evidence.
+
+Both resolutions are represented explicitly by the `reviewed-collision-policy-v1` JSON schema. `group_sha256` lists arrays of two or more exact hashes that should retain separate observations under one reviewed content identity; `exclude_sha256` lists observations to omit. A hash may receive only one decision, referenced hashes must exist, and grouped observations must share one label.
+
+Pass the reviewed file through `--identity-policy` when training the feature and neural models and when running the frozen stress matrix. The policy digest is recorded in both experiment reports and in neural checkpoint metadata. No policy is applied by default, so selecting a resolution remains an explicit data-governance decision rather than a hidden preprocessing heuristic.

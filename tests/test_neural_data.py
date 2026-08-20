@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -104,6 +105,40 @@ class NeuralDataTests(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0].source, "SynthScars")
         self.assertEqual(rows[0].label, 1)
+
+    def test_cifake_adapter_applies_explicit_reviewed_identity_policy(self) -> None:
+        from PIL import Image
+
+        from forensic_model.data_audit import sha256_file
+        from forensic_model.neural_data import discover_cifake
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            images = root / "train" / "REAL"
+            images.mkdir(parents=True)
+            first = images / "red.jpg"
+            second = images / "blue.jpg"
+            Image.new("RGB", (12, 12), "red").save(first)
+            Image.new("RGB", (12, 12), "blue").save(second)
+            policy = root / "policy.json"
+            policy.write_text(
+                json.dumps(
+                    {
+                        "schema": "reviewed-collision-policy-v1",
+                        "group_sha256": [[sha256_file(first), sha256_file(second)]],
+                        "exclude_sha256": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            bundle = discover_cifake(root, seed="fixture", identity_policy=policy)
+
+        all_rows = bundle.train + bundle.validation + bundle.test
+        self.assertEqual(len({row.content_group for row in all_rows}), 1)
+        self.assertEqual(sum(bool(split) for split in (bundle.train, bundle.validation, bundle.test)), 1)
+        self.assertIsNotNone(bundle.identity_policy)
+        self.assertEqual(bundle.identity_policy.reviewed_content_groups, 1)
 
 
 if __name__ == "__main__":

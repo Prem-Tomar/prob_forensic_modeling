@@ -24,6 +24,8 @@ class ImageStressExperimentTests(unittest.TestCase):
                     "/artifacts/feature.json",
                     "--output",
                     "/reports/stress.json",
+                    "--identity-policy",
+                    "/data/reviewed-identities.json",
                     "--batch-size",
                     "64",
                     "--bootstrap-resamples",
@@ -40,6 +42,7 @@ class ImageStressExperimentTests(unittest.TestCase):
         self.assertEqual(positional, (Path("/data/cifake"),))
         self.assertEqual(keywords["neural_checkpoint"], Path("/artifacts/neural.pt"))
         self.assertEqual(keywords["feature_artifact"], Path("/artifacts/feature.json"))
+        self.assertEqual(keywords["identity_policy"], Path("/data/reviewed-identities.json"))
         self.assertEqual(keywords["bootstrap_resamples"], 40)
         self.assertEqual(keywords["cpu_threads"], 2)
 

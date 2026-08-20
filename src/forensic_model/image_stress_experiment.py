@@ -50,6 +50,7 @@ def run_image_stress_experiment(
     neural_checkpoint: Path,
     feature_artifact: Path,
     output: Path,
+    identity_policy: Path | None = None,
     batch_size: int = 512,
     bootstrap_resamples: int = 200,
     cpu_threads: int = 8,
@@ -61,7 +62,7 @@ def run_image_stress_experiment(
         raise ValueError("batch size and CPU threads must be positive")
     if bootstrap_resamples < 20 or seed < 0:
         raise ValueError("bootstrap resamples must be at least 20 and seed must be non-negative")
-    bundle = discover_cifake(cifake_root)
+    bundle = discover_cifake(cifake_root, identity_policy=identity_policy)
     neural = CalibratedNeuralImageDetector.load(neural_checkpoint, abstain_margin=0.0)
     feature = ImageDetector.load(feature_artifact)
     if feature.calibrator is None:
@@ -154,6 +155,8 @@ def run_image_stress_experiment(
             "The same frozen thresholds and calibrators are used throughout; no stress-slice tuning is performed.",
         ],
     }
+    if bundle.identity_policy is not None:
+        report["identity_policy"] = asdict(bundle.identity_policy)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return report
@@ -165,6 +168,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
     parser.add_argument("--neural-checkpoint", type=Path, required=True)
     parser.add_argument("--feature-artifact", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--identity-policy", type=Path)
     parser.add_argument("--batch-size", type=int, default=512)
     parser.add_argument("--bootstrap-resamples", type=int, default=200)
     parser.add_argument("--cpu-threads", type=int, default=8)
@@ -175,6 +179,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
         neural_checkpoint=options.neural_checkpoint,
         feature_artifact=options.feature_artifact,
         output=options.output,
+        identity_policy=options.identity_policy,
         batch_size=options.batch_size,
         bootstrap_resamples=options.bootstrap_resamples,
         cpu_threads=options.cpu_threads,

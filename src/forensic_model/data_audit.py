@@ -19,6 +19,7 @@ class CandidateSample:
     label: str
     sha256: str
     perceptual_hash: str = ""
+    reviewed_content_group: str = ""
 
 
 @dataclass(frozen=True)
@@ -90,14 +91,24 @@ def partition_candidates(
 
     retained: list[PartitionedSample] = []
     split_counts = {"train": 0, "validation": 0, "test": 0}
+    reviewed_labels: dict[str, str] = {}
     for exact_hash, group in sorted(by_hash.items()):
         labels = {candidate.label for candidate in group}
         if len(labels) != 1:
             ids = ", ".join(sorted(candidate.sample_id for candidate in group))
             raise DataAuditError(f"exact duplicates have conflicting labels: {ids}")
+        reviewed_groups = {candidate.reviewed_content_group for candidate in group if candidate.reviewed_content_group}
+        if len(reviewed_groups) > 1:
+            ids = ", ".join(sorted(candidate.sample_id for candidate in group))
+            raise DataAuditError(f"exact duplicates have conflicting reviewed identities: {ids}")
         canonical = min(group, key=lambda candidate: (str(candidate.path), candidate.sample_id))
-        split = _stable_split(seed, exact_hash, train_percent, validation_percent)
-        retained.append(PartitionedSample(candidate=canonical, content_group=exact_hash, split=split))
+        content_group = next(iter(reviewed_groups), exact_hash)
+        previous_label = reviewed_labels.get(content_group)
+        if previous_label is not None and previous_label != canonical.label:
+            raise DataAuditError(f"reviewed content group {content_group!r} has conflicting labels")
+        reviewed_labels[content_group] = canonical.label
+        split = _stable_split(seed, content_group, train_percent, validation_percent)
+        retained.append(PartitionedSample(candidate=canonical, content_group=content_group, split=split))
         split_counts[split] += 1
 
     exact_groups = [group for group in by_hash.values() if len(group) > 1]
@@ -133,3 +144,5 @@ def _validate_candidate(candidate: CandidateSample) -> None:
         character not in "0123456789abcdef" for character in candidate.perceptual_hash.lower()
     ):
         raise DataAuditError(f"{candidate.sample_id}: invalid perceptual_hash")
+    if "\n" in candidate.reviewed_content_group or "\0" in candidate.reviewed_content_group:
+        raise DataAuditError(f"{candidate.sample_id}: invalid reviewed_content_group")

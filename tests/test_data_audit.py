@@ -5,8 +5,21 @@ from pathlib import Path
 from forensic_model.data_audit import CandidateSample, DataAuditError, partition_candidates, sha256_file
 
 
-def candidate(sample_id: str, digest: str, label: str = "synthetic", perceptual_hash: str = "") -> CandidateSample:
-    return CandidateSample(sample_id, Path(f"/{sample_id}.jpg"), label, digest * 64, perceptual_hash)
+def candidate(
+    sample_id: str,
+    digest: str,
+    label: str = "synthetic",
+    perceptual_hash: str = "",
+    reviewed_content_group: str = "",
+) -> CandidateSample:
+    return CandidateSample(
+        sample_id,
+        Path(f"/{sample_id}.jpg"),
+        label,
+        digest * 64,
+        perceptual_hash,
+        reviewed_content_group,
+    )
 
 
 class DataAuditTests(unittest.TestCase):
@@ -39,6 +52,27 @@ class DataAuditTests(unittest.TestCase):
     def test_conflicting_duplicate_labels_are_rejected(self) -> None:
         rows = [candidate("real", "a", "camera_or_human"), candidate("fake", "a", "synthetic")]
         with self.assertRaisesRegex(DataAuditError, "conflicting labels"):
+            partition_candidates(rows, seed="split")
+
+    def test_reviewed_identity_keeps_observations_in_one_partition(self) -> None:
+        rows = [
+            candidate("red", "a", reviewed_content_group="reviewed-scene"),
+            candidate("blue", "b", reviewed_content_group="reviewed-scene"),
+        ]
+
+        retained, summary = partition_candidates(rows, seed="split")
+
+        self.assertEqual(len(retained), 2)
+        self.assertEqual({row.content_group for row in retained}, {"reviewed-scene"})
+        self.assertEqual(len({row.split for row in retained}), 1)
+        self.assertEqual(summary.retained_samples, 2)
+
+    def test_reviewed_identity_rejects_conflicting_labels(self) -> None:
+        rows = [
+            candidate("real", "a", "camera_or_human", reviewed_content_group="reviewed-scene"),
+            candidate("fake", "b", "synthetic", reviewed_content_group="reviewed-scene"),
+        ]
+        with self.assertRaisesRegex(DataAuditError, "reviewed content group.*conflicting labels"):
             partition_candidates(rows, seed="split")
 
 

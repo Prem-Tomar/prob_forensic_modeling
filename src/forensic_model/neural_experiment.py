@@ -43,11 +43,12 @@ def run_real_image_experiment(
     *,
     output: Path,
     checkpoint: Path,
+    identity_policy: Path | None = None,
     training_config: TrainingConfig = TrainingConfig(),
 ) -> dict[str, object]:
     """Train from scratch, stress the test split, and evaluate an unseen source."""
 
-    bundle = discover_cifake(cifake_root)
+    bundle = discover_cifake(cifake_root, identity_policy=identity_policy)
     train = PillowImageDataset(bundle.train, training_transform())
     validation = PillowImageDataset(bundle.validation, evaluation_transform())
     detector = train_neural_detector(train, validation, training_config=training_config)
@@ -100,6 +101,8 @@ def run_real_image_experiment(
     )
     metadata = detector.metadata()
     metadata.update({"dataset": "CIFAKE", "split_seed": "cifake-split-v1"})
+    if bundle.identity_policy is not None:
+        metadata["identity_policy_sha256"] = bundle.identity_policy.policy_sha256
     save_neural_checkpoint(checkpoint, detector.model, metadata=metadata)
 
     report: dict[str, object] = {
@@ -147,6 +150,8 @@ def run_real_image_experiment(
             "ignored_fields": ["/model/checkpoint_sha256"],
         },
     }
+    if bundle.identity_policy is not None:
+        report["identity_policy"] = asdict(bundle.identity_policy)
     rendered = json.dumps(report, indent=2, sort_keys=True) + "\n"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(rendered, encoding="utf-8")
@@ -159,6 +164,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
     parser.add_argument("--synthscars-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--checkpoint", type=Path, required=True)
+    parser.add_argument("--identity-policy", type=Path)
     parser.add_argument("--epochs", type=int, default=8)
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--seed", type=int, default=20260818)
@@ -168,6 +174,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
         options.synthscars_root,
         output=options.output,
         checkpoint=options.checkpoint,
+        identity_policy=options.identity_policy,
         training_config=TrainingConfig(seed=options.seed, epochs=options.epochs, batch_size=options.batch_size),
     )
     return 0

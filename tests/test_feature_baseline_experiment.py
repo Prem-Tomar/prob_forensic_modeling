@@ -26,6 +26,8 @@ class FeatureBaselineExperimentTests(unittest.TestCase):
                     "/artifacts/feature.json",
                     "--neural-report",
                     "/reports/neural.json",
+                    "--identity-policy",
+                    "/data/reviewed-identities.json",
                     "--epochs",
                     "20",
                     "--batch-size",
@@ -42,6 +44,7 @@ class FeatureBaselineExperimentTests(unittest.TestCase):
         self.assertEqual(positional, (Path("/data/cifake"), Path("/data/synthscars")))
         self.assertEqual(keywords["artifact"], Path("/artifacts/feature.json"))
         self.assertEqual(keywords["neural_report"], Path("/reports/neural.json"))
+        self.assertEqual(keywords["identity_policy"], Path("/data/reviewed-identities.json"))
         self.assertEqual(keywords["training_config"].epochs, 20)
         self.assertEqual(keywords["training_config"].batch_size, 16)
         self.assertEqual(keywords["training_config"].cpu_threads, 2)
